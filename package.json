@@ -1,0 +1,26 @@
+{
+  "name": "opengpio",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rm -rf ./dist && npm run build:ts && npm run build:rust:release",
+    "build:ts": "tsc && rm ./dist/lib.js",
+    "build:rust": "cargo-cp-artifact -nc ./dist/lib.node -- cargo build --message-format=json-render-diagnostics",
+    "build:rust:debug": "npm run build:rust --",
+    "build:rust:release": "npm run build:rust -- --release",
+    "install": "npm run build:rust",
+    "test": "cargo test"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/i2c-bus": "^5.1.0",
+    "@types/node": "^18.16.2",
+    "cargo-cp-artifact": "^0.1"
+  },
+  "dependencies": {
+    "i2c-bus": "^5.2.2",
+    "typescript": "^5.0.4"
+  }
+}
