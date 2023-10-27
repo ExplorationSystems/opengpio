@@ -1,5 +1,7 @@
-import NanoPi_NEO3 from './devices/NanoPi_NEO3';
+import { devices } from './main';
 import { Edge } from './types';
+
+const { NanoPi_NEO3 } = devices;
 
 NanoPi_NEO3.get(27);
 NanoPi_NEO3.set(27, true);

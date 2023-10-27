@@ -1,5 +1,5 @@
 import { Edge, Gpio } from '../types';
-import opengpio from '../main';
+import opengpio from '../driver';
 
 export class Device {
     static board: Record<number, Gpio> = {};

@@ -1,5 +1,5 @@
 import binding from 'bindings';
 import { type OpenGpioBindings } from './types';
-const opengpio: OpenGpioBindings = binding('opengpio');
+const bindings: OpenGpioBindings = binding('opengpio');
 
-export default opengpio;
+export default bindings;
