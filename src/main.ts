@@ -1,5 +1,11 @@
 import binding from 'bindings';
-import { type OpenGpio } from './types';
-const opengpio: OpenGpio = binding('opengpio');
+import { Gpio, type OpenGpioBindings } from './types';
+const lib: OpenGpioBindings = binding('opengpio');
 
-export default opengpio;
+export function get(gpio: Gpio): number {
+  return lib.get(gpio.chip, gpio.line);
+}
+
+export function set(gpio: Gpio, value: boolean): void {
+  lib.set(gpio.chip, gpio.line, value);
+}
