@@ -1,8 +1,8 @@
 {
   "targets": [
     {
-      "target_name": "addon",
-      "sources": [ "src/hello.cc" ],
+      "target_name": "opengpio",
+      "sources": [ "cpp/opengpio.cpp" ],
        "include_dirs": [
         "<!@(node -p \"require('node-addon-api').include\")"
       ],
