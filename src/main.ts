@@ -1,6 +1,5 @@
 import binding from 'bindings';
-const opengpio: {
-    info: () => string;
-} = binding('opengpio');
+import { type OpenGpio } from './types';
+const opengpio: OpenGpio = binding('opengpio');
 
 export default opengpio;

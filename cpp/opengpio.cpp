@@ -1,13 +1,32 @@
 #include <napi.h>
 
 // Just a dramatic intro to test that the module is working
-Napi::String Info(const Napi::CallbackInfo& info) {
+Napi::Boolean GetGpio(Napi::CallbackInfo const& info){
   Napi::Env env = info.Env();
-  return Napi::String::New(env, "Built for the wanderers, the explorers, the adventurers of the world. For those who want to see the world, not read about it. For those who want to get out there and experience it all. For those who want to live their dreams, not sleep through them. For those who want to see the world their way. Adventure belongs to the couragous. Exploration Systems.");
+  return Napi::Boolean::New(env, true);
+}
+
+Napi::Void SetGpio(Napi::CallbackInfo const& info){
+  Napi::Env env = info.Env();
+  return Napi::Void::New(env);
+}
+
+Napi::Void WatchGpio(Napi::CallbackInfo const& info){
+  Napi::Env env = info.Env();
+  return Napi::Void::New(env);
+}
+
+Napi::Void PwmGpio(Napi::CallbackInfo const& info){
+  Napi::Env env = info.Env();
+  return Napi::Void::New(env);
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports["info"] = Napi::Function::New(env, Info);
+  exports["get"] = Napi::Function::New(env, GetGpio);
+  exports["set"] = Napi::Function::New(env, SetGpio);
+  exports["watch"] = Napi::Function::New(env, WatchGpio);
+  exports["pwm"] = Napi::Function::New(env, PwmGpio);
   return exports;
 }
 
