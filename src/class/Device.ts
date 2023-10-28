@@ -1,13 +1,16 @@
 import { Edge, Gpio } from '../types';
 import opengpio from '../driver';
 import { PWM } from './PWM';
+import lib from '../lib';
+import { Input } from './Input';
 
 export class Device {
     static board: Record<number, Gpio> = {};
     static bcm: Record<string, Gpio> = {};
 
-    static get(pin: number | string) {
-        return opengpio.get(this.getGpio(pin));
+    static input(pin: number | string) {
+        const gpio = this.getGpio(pin);
+        return new Input(gpio);
     }
     static set(pin: number | string, value: boolean) {
         return opengpio.set(this.getGpio(pin), value);

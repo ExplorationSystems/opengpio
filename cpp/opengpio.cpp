@@ -6,7 +6,7 @@ using namespace std;
 // TODO This needs to become async so it's not spinning up new threads for each call
 
 // Just a dramatic intro to test that the module is working
-Napi::Function GpioIn(Napi::CallbackInfo const& info){
+Napi::Function GpioInput(Napi::CallbackInfo const& info){
     Napi::Env env = info.Env();
 
     int chipNumber = info[0].As<Napi::Number>().Int32Value();
@@ -16,9 +16,9 @@ Napi::Function GpioIn(Napi::CallbackInfo const& info){
     auto line = chip.get_line(lineNumber);
     line.request({"opengpio", gpiod::line_request::DIRECTION_INPUT, 0});  
 
-    printf("Get GPIO at: %d:%d -> %d\n", chipNumber, lineNumber, value);
-    
-    Napi::Function getValue = Napi::Function::New(info.Env(), [&](const Napi::CallbackInfo &info){
+    // printf("Get GPIO at: %d:%d -> %d\n", chipNumber, lineNumber, value);
+
+    Napi::Function getter = Napi::Function::New(info.Env(), [&line](const Napi::CallbackInfo &info){
         // This is the function that will be returned to Node.js
         // You can define the function logic here
         bool value = line.get_value();
@@ -32,15 +32,13 @@ Napi::Function GpioIn(Napi::CallbackInfo const& info){
     // });
 
     // Return the Napi::Function object
-    return func;
+    return getter;
 }
 
-void GpioOut(Napi::CallbackInfo const& info){
+void GpioOutput(Napi::CallbackInfo const& info){
     // Napi::Env env = info.Env();
-
     int chipNumber = info[0].As<Napi::Number>().Int32Value();
     int lineNumber = info[1].As<Napi::Number>().Int32Value();
-    bool value = info[2].As<Napi::Boolean>().ToBoolean();
 
     ::gpiod::chip chip("gpiochip" + to_string(chipNumber));
     auto line = chip.get_line(lineNumber);
@@ -48,7 +46,14 @@ void GpioOut(Napi::CallbackInfo const& info){
     line.set_value(value);
     line.release();
 
-    printf("Set GPIO at: %d:%d -> %d\n", chipNumber, lineNumber,value);
+    Napi::Function setter = Napi::Function::New(info.Env(), [&line](const Napi::CallbackInfo &info){
+        bool value = info[0].As<Napi::Boolean>().ToBoolean();
+        // This is the function that will be returned to Node.js
+        // You can define the function logic here
+        line.set_value(value);
+    });
+
+    return setter;
 }
 
 void GpioWatch(Napi::CallbackInfo const& info){
@@ -94,10 +99,10 @@ Napi::String Info(const Napi::CallbackInfo& info) {
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports["info"] = Napi::Function::New(env, Info);
-  exports["in"] = Napi::Function::New(env, GetGpio);
-  exports["out"] = Napi::Function::New(env, SetGpio);
-  exports["watch"] = Napi::Function::New(env, WatchGpio);
-  exports["pwm"] = Napi::Function::New(env, PwmGpio);
+  exports["input"] = Napi::Function::New(env, GpioInput);
+  exports["output"] = Napi::Function::New(env, GpioOutput);
+  exports["watch"] = Napi::Function::New(env, GpioWatch);
+  exports["pwm"] = Napi::Function::New(env, GpioPwm);
   return exports;
 }
 

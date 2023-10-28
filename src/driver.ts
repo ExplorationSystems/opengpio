@@ -3,19 +3,19 @@ import { fork } from 'child_process';
 import path from 'path';
 import debug from 'debug';
 import lib from './lib';
-
+// TODO remove this file
 const log = debug('opengpio');
 // const primaryWorker = fork(path.join(__dirname, 'worker'));
 
 // Make get and set calls async to not block the main thread
 const opengpio = {
     get: (gpio: Gpio) => {
-        log(`get(${gpio.chip}, ${gpio.line})`);
-        return lib.get(gpio.chip, gpio.line);
+        // log(`get(${gpio.chip}, ${gpio.line})`);
+        // return lib.get(gpio.chip, gpio.line);
     },
     set: (gpio: Gpio, value: boolean) => {
-        log(`set(${gpio.chip}, ${gpio.line}, ${value})`);
-        lib.set(gpio.chip, gpio.line, value);
+        // log(`set(${gpio.chip}, ${gpio.line}, ${value})`);
+        // lib.set(gpio.chip, gpio.line, value);
     },
     watch: (gpio: Gpio, edge: Edge, callback: (value: boolean) => void) => {
         log(`watch(${gpio.chip}, ${gpio.line}, ${edge})`);

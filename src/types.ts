@@ -12,8 +12,8 @@ export type Gpio = {
 // The type of the object returned by the native module.
 export type OpenGpioBindings = {
     info: () => string;
-    get: (chip: number, line: number) => boolean;
-    set: (chip: number, line: number, value: boolean) => void;
+    input: (chip: number, line: number) => () => boolean;
+    output: (chip: number, line: number) => (value: boolean) => void;
     watch: (
         chip: number,
         line: number,
@@ -32,3 +32,7 @@ export type Raster = {
     line: number;
     chip: number;
 };
+
+export interface Pin {
+    close: () => void;
+}
