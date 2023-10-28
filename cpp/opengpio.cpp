@@ -6,7 +6,7 @@ using namespace std;
 // TODO This needs to become async so it's not spinning up new threads for each call
 
 // Just a dramatic intro to test that the module is working
-Napi::Boolean GetGpio(Napi::CallbackInfo const& info){
+Napi::Function GpioIn(Napi::CallbackInfo const& info){
     Napi::Env env = info.Env();
 
     int chipNumber = info[0].As<Napi::Number>().Int32Value();
@@ -16,15 +16,26 @@ Napi::Boolean GetGpio(Napi::CallbackInfo const& info){
     auto line = chip.get_line(lineNumber);
     line.request({"opengpio", gpiod::line_request::DIRECTION_INPUT, 0});  
 
-    bool value = line.get_value();
-    line.release();
-
     printf("Get GPIO at: %d:%d -> %d\n", chipNumber, lineNumber, value);
+    
+    Napi::Function getValue = Napi::Function::New(info.Env(), [&](const Napi::CallbackInfo &info){
+        // This is the function that will be returned to Node.js
+        // You can define the function logic here
+        bool value = line.get_value();
+        return Napi::Boolean::New(info.Env(), value); 
+    });
 
-    return Napi::Boolean::New(env, value);
+    // Napi::Function cleanup = Napi::Function::New(info.Env(), [&line](const Napi::CallbackInfo &info){
+    //     // This is the function that will be returned to Node.js
+    //     // You can define the function logic here
+    //     line.release();
+    // });
+
+    // Return the Napi::Function object
+    return func;
 }
 
-void SetGpio(Napi::CallbackInfo const& info){
+void GpioOut(Napi::CallbackInfo const& info){
     // Napi::Env env = info.Env();
 
     int chipNumber = info[0].As<Napi::Number>().Int32Value();
@@ -40,10 +51,10 @@ void SetGpio(Napi::CallbackInfo const& info){
     printf("Set GPIO at: %d:%d -> %d\n", chipNumber, lineNumber,value);
 }
 
-void WatchGpio(Napi::CallbackInfo const& info){
+void GpioWatch(Napi::CallbackInfo const& info){
 }
 
-void PwmGpio(Napi::CallbackInfo const& info){
+void GpioPwm(Napi::CallbackInfo const& info){
     // Napi::Env env = info.Env();
 
     int chipNumber = info[0].As<Napi::Number>().Int32Value();
@@ -83,8 +94,8 @@ Napi::String Info(const Napi::CallbackInfo& info) {
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports["info"] = Napi::Function::New(env, Info);
-  exports["get"] = Napi::Function::New(env, GetGpio);
-  exports["set"] = Napi::Function::New(env, SetGpio);
+  exports["in"] = Napi::Function::New(env, GetGpio);
+  exports["out"] = Napi::Function::New(env, SetGpio);
   exports["watch"] = Napi::Function::New(env, WatchGpio);
   exports["pwm"] = Napi::Function::New(env, PwmGpio);
   return exports;
