@@ -1,33 +1,37 @@
-import { Gpio } from "../types";
-import { ChildProcess } from 'child_process';
-import opengpio from '../driver';
+import lib from '../lib';
+import { Gpio } from '../types';
 
-export class PWM {
-    process?: ChildProcess;
-    constructor(private gpio: Gpio, private dutyCycle: number, private frequency: number = 50) {
-        this.process = opengpio.pwm(gpio, dutyCycle, frequency);
-    }
+export enum Direction {
+    Input,
+    Output,
+}
 
-    stop() {
-        if (this.process) {
-            this.process.kill();
-            this.process = undefined;
+export class Pin {
+    protected getter: () => boolean = () => false;
+    protected setter: (value:boolean) => void = () => {};
+    protected release: () => void = () => {};
+
+    constructor(private readonly gpio: Gpio, private readonly direction: Direction) {
+        if (direction === Direction.Input) {
+            const [getter, release] = lib.input(gpio.chip, gpio.line)
+            this.getter = getter;
+            this.release = release;
+        }else if (direction === Direction.Output) {
+            const [setter, release] = lib.output(gpio.chip, gpio.line)
+            this.setter = setter;
+            this.release = release;
         }
     }
 
-    start() {
-        this.stop();
-        this.process = opengpio.pwm(this.gpio, this.dutyCycle, this.frequency);
+    close() {
+        this.release();
+    }
+    
+    get value() {
+        return this.getter();
     }
 
-    setDutyCycle(dutyCycle: number) {
-        this.dutyCycle = dutyCycle;
-        this.start();
-    }
-
-    setFrequency(frequency: number) {
-        this.stop();
-        this.frequency = frequency;
-        this.start();
+    set value(value:boolean) {
+        this.setter(value);
     }
 }

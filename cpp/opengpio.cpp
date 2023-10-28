@@ -3,10 +3,8 @@
 #include <gpiod.hpp>
 #include <unistd.h>
 using namespace std;
-// TODO This needs to become async so it's not spinning up new threads for each call
 
-// Just a dramatic intro to test that the module is working
-Napi::Function GpioInput(Napi::CallbackInfo const& info){
+Napi::Array GpioInput(Napi::CallbackInfo const& info){
     Napi::Env env = info.Env();
 
     int chipNumber = info[0].As<Napi::Number>().Int32Value();
@@ -16,26 +14,23 @@ Napi::Function GpioInput(Napi::CallbackInfo const& info){
     auto line = chip.get_line(lineNumber);
     line.request({"opengpio", gpiod::line_request::DIRECTION_INPUT, 0});  
 
-    // printf("Get GPIO at: %d:%d -> %d\n", chipNumber, lineNumber, value);
-
-    Napi::Function getter = Napi::Function::New(info.Env(), [&line](const Napi::CallbackInfo &info){
-        // This is the function that will be returned to Node.js
-        // You can define the function logic here
+    Napi::Function getter = Napi::Function::New(info.Env(), [line](const Napi::CallbackInfo &info){
         bool value = line.get_value();
         return Napi::Boolean::New(info.Env(), value); 
     });
 
-    // Napi::Function cleanup = Napi::Function::New(info.Env(), [&line](const Napi::CallbackInfo &info){
-    //     // This is the function that will be returned to Node.js
-    //     // You can define the function logic here
-    //     line.release();
-    // });
+    Napi::Function release = Napi::Function::New(info.Env(), [line](const Napi::CallbackInfo &info){
+        line.release();
+    });
 
-    // Return the Napi::Function object
-    return getter;
+    Napi::Array arr = Napi::Array::New(info.Env(), 2);
+    arr.Set(0u, getter);
+    arr.Set(1u, release);
+
+    return arr;
 }
 
-void GpioOutput(Napi::CallbackInfo const& info){
+Napi::Array GpioOutput(Napi::CallbackInfo const& info){
     // Napi::Env env = info.Env();
     int chipNumber = info[0].As<Napi::Number>().Int32Value();
     int lineNumber = info[1].As<Napi::Number>().Int32Value();
@@ -43,17 +38,21 @@ void GpioOutput(Napi::CallbackInfo const& info){
     ::gpiod::chip chip("gpiochip" + to_string(chipNumber));
     auto line = chip.get_line(lineNumber);
     line.request({"opengpio", gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);  
-    line.set_value(value);
-    line.release();
 
-    Napi::Function setter = Napi::Function::New(info.Env(), [&line](const Napi::CallbackInfo &info){
+    Napi::Function setter = Napi::Function::New(info.Env(), [line](const Napi::CallbackInfo &info){
         bool value = info[0].As<Napi::Boolean>().ToBoolean();
-        // This is the function that will be returned to Node.js
-        // You can define the function logic here
         line.set_value(value);
     });
 
-    return setter;
+    Napi::Function release = Napi::Function::New(info.Env(), [line](const Napi::CallbackInfo &info){
+        line.release();
+    });
+
+    Napi::Array arr = Napi::Array::New(info.Env(), 2);
+    arr.Set(0u, setter);
+    arr.Set(1u, release);
+
+    return arr;
 }
 
 void GpioWatch(Napi::CallbackInfo const& info){
