@@ -16,7 +16,7 @@
         "format": "prettier --config .prettierrc 'src/**/*.ts' --write"
     },
     "author": "",
-    "license": "ISC",
+    "license": "MIT",
     "description": "",
     "devDependencies": {
         "@types/bindings": "^1.5.3",
