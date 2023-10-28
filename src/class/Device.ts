@@ -1,5 +1,6 @@
 import { Edge, Gpio } from '../types';
 import opengpio from '../driver';
+import { PWM } from './PWM';
 
 export class Device {
     static board: Record<number, Gpio> = {};
@@ -19,7 +20,7 @@ export class Device {
         return opengpio.watch(this.getGpio(pin), edge, callback);
     }
     static pwm(pin: number | string, dutyCycle: number, frequency: number) {
-        return opengpio.pwm(this.getGpio(pin), dutyCycle, frequency);
+        return new PWM(this.getGpio(pin), dutyCycle, frequency);
     }
 
     private static getGpio(pin: number | string): Gpio {

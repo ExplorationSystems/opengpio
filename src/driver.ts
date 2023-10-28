@@ -5,7 +5,9 @@ import debug from 'debug';
 import lib from './lib';
 
 const log = debug('opengpio');
+// const primaryWorker = fork(path.join(__dirname, 'worker'));
 
+// Make get and set calls async to not block the main thread
 const opengpio = {
     get: (gpio: Gpio) => {
         log(`get(${gpio.chip}, ${gpio.line})`);
@@ -25,7 +27,7 @@ const opengpio = {
     },
     pwm: (gpio: Gpio, dutyCycle: number, frequency: number = 50) => {
         dutyCycle = Math.min(Math.max(dutyCycle, 0), 1); // Clamp duty cycle to 0-1
-        frequency = Math.max(frequency, 1); // Clamp frequency to 1+
+        frequency = Math.round(Math.max(frequency, 1)); // Clamp frequency to 1+
 
         log(`pwm(${gpio.chip}, ${gpio.line}, ${dutyCycle}, ${frequency})`);
         const worker = fork(path.join(__dirname, 'worker'));
