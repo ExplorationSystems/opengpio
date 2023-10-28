@@ -1,5 +1,5 @@
 import { Gpio } from '../types';
-import { Device } from './Device';
+import { Device } from '../class/Device';
 
 const pinToGpio: Record<number, Gpio> = {
     27: { chip: 0, line: 27 },
