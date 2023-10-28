@@ -5,7 +5,9 @@ import debug from 'debug';
 import lib from './lib';
 
 const log = debug('opengpio');
+// const primaryWorker = fork(path.join(__dirname, 'worker'));
 
+// Make get and set calls async to not block the main thread
 const opengpio = {
     get: (gpio: Gpio) => {
         log(`get(${gpio.chip}, ${gpio.line})`);
