@@ -1,23 +1,4 @@
-import { Gpio } from '../types';
 import { Device } from '../class/Device';
-
-const pinToGpio = {
-    27: { chip: 0, line: 27 },
-    66: { chip: 2, line: 2 },
-    79: { chip: 2, line: 15 },
-    81: { chip: 2, line: 17 },
-    82: { chip: 2, line: 18 },
-    83: { chip: 2, line: 19 },
-    87: { chip: 2, line: 23 },
-    96: { chip: 3, line: 0 },
-    97: { chip: 3, line: 1 },
-    98: { chip: 3, line: 2 },
-    100: { chip: 3, line: 4 },
-    101: { chip: 3, line: 5 },
-    102: { chip: 3, line: 6 },
-    103: { chip: 3, line: 7 },
-    104: { chip: 3, line: 8 }
-};
 
 export default class NanoPi_NEO3 extends Device {
     static board = {
