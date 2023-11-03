@@ -1,5 +1,5 @@
 import lib from '../lib';
-import { Gpio } from '../types';
+import { CleanupCallback, Gpio, PinGetter, PinSetter } from '../types';
 
 export enum Direction {
     Input,
@@ -7,24 +7,24 @@ export enum Direction {
 }
 
 export class Pin {
-    protected getter: () => boolean = () => false;
-    protected setter: (value:boolean) => void = () => {};
-    protected release: () => void = () => {};
+    private getter: PinGetter = () => false;
+    private setter: PinSetter = () => {};
+    private cleanup: CleanupCallback = () => {};
 
     constructor(private readonly gpio: Gpio, private readonly direction: Direction) {
         if (direction === Direction.Input) {
-            const [getter, release] = lib.input(gpio.chip, gpio.line)
+            const [getter, cleanup] = lib.input(gpio.chip, gpio.line)
             this.getter = getter;
-            this.release = release;
+            this.cleanup = cleanup;
         }else if (direction === Direction.Output) {
-            const [setter, release] = lib.output(gpio.chip, gpio.line)
+            const [setter, cleanup] = lib.output(gpio.chip, gpio.line)
             this.setter = setter;
-            this.release = release;
+            this.cleanup = cleanup;
         }
     }
 
-    close() {
-        this.release();
+    stop() {
+        this.cleanup();
     }
     
     get value() {

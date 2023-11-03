@@ -10,29 +10,28 @@ export type Gpio = {
 };
 
 // The type of the object returned by the native module.
+
+export type DutyCycleSetter = (dutyCycle: number) => void;
+export type FrequencySetter = (frequency: number) => void;
+export type CleanupCallback = () => void;
+export type PinSetter = (value: boolean) => void;
+export type PinGetter = () => boolean;
+export type WatchCallback = (value:boolean) => boolean;
+
 export type OpenGpioBindings = {
     info: () => string;
-    input: (chip: number, line: number) => [() => boolean, () => void];
-    output: (chip: number, line: number) => [(value: boolean) => void, () => void];
+    input: (chip: number, line: number) => [PinGetter, CleanupCallback];
+    output: (chip: number, line: number) => [PinSetter, CleanupCallback];
     watch: (
         chip: number,
         line: number,
         edge: Edge,
-        callback: (value: boolean) => void
-    ) => void;
+        callback: WatchCallback
+    ) => [CleanupCallback];
     pwm: (
         chip: number,
         line: number,
         dutyCycle: number,
         frequency: number
-    ) => void;
+    ) => [DutyCycleSetter, FrequencySetter, CleanupCallback];
 };
-
-export type Raster = {
-    line: number;
-    chip: number;
-};
-
-export interface Pin {
-    close: () => void;
-}
