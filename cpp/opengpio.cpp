@@ -22,6 +22,7 @@ Napi::Array GpioInput(Napi::CallbackInfo const& info){
 
     Napi::Function cleanup = Napi::Function::New(info.Env(), [line](const Napi::CallbackInfo &info){
         line.release();
+        chip.close();
     });
 
     Napi::Array arr = Napi::Array::New(info.Env(), 2);
@@ -47,6 +48,7 @@ Napi::Array GpioOutput(Napi::CallbackInfo const& info){
 
     Napi::Function cleanup = Napi::Function::New(info.Env(), [line](const Napi::CallbackInfo &info){
         line.release();
+        chip.close();
     });
 
     Napi::Array arr = Napi::Array::New(info.Env(), 2);
@@ -57,6 +59,23 @@ Napi::Array GpioOutput(Napi::CallbackInfo const& info){
 }
 
 void GpioWatch(Napi::CallbackInfo const& info){
+    int chipNumber = info[0].As<Napi::Number>().Int32Value();
+    int lineNumber = info[1].As<Napi::Number>().Int32Value();
+
+    gpiod::chip chip("gpiochip" + to_string(chipNumber));
+    gpiod::line line = chip.get_line(lineNumber);
+    line.request(gpiod::line_request::DIRECTION_INPUT, "opengpio_"+to_string(chipNumber)+"_"+to_string(lineNumber)+"_watch");  
+    line.set_edge_events(decltype(line)::EDGE_BOTH);
+
+    while (true) {
+        line_event event = line.event_wait();
+
+        if (event.event_type() == decltype(line)::EVENT_FALLING_EDGE) {
+            std::cout << "Falling edge detected on line " << line_offset << std::endl;
+        } else if (event.event_type() == decltype(line)::EVENT_RISING_EDGE) {
+            std::cout << "Rising edge detected on line " << line_offset << std::endl;
+        }
+    }
 }
 
 struct PwmContext {
@@ -119,6 +138,7 @@ Napi::Array GpioPwm(Napi::CallbackInfo const& info){
             PwmContext* data = static_cast<PwmContext*>(req->data);
             gpiod::line line = data->line;
             line.release();
+            chip.close();
 
             printf("Done\n");
             free(data);
