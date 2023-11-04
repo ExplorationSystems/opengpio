@@ -3,20 +3,20 @@ import { Edge } from './types';
 
 const { NanoPi_NEO3 } = devices;
 
-const watch = NanoPi_NEO3.watch(NanoPi_NEO3.bcm.GPIO3_B0, Edge.Both);
-watch.on('event', (value) => {
-    console.log('Event', value);
-});
+// const watch = NanoPi_NEO3.watch(NanoPi_NEO3.bcm.GPIO3_B0, Edge.Both);
+// watch.on('event', (value) => {
+//     console.log('Event', value);
+// });
 
-setTimeout(() => {
-    watch.stop();
-}, 5000);
+// setTimeout(() => {
+//     watch.stop();
+// }, 5000);
 
 setInterval(() => {
     console.log(1);
 }, 1000);
 
-// const pwm = NanoPi_NEO3.pwm(NanoPi_NEO3.bcm.GPIO3_B0, 0.5, 50);
+const pwm = NanoPi_NEO3.pwm(NanoPi_NEO3.bcm.GPIO3_B0, 0.5, 50);
 
 // let freq = 1;
 // setInterval(() => {
@@ -40,9 +40,9 @@ setInterval(() => {
 //     pwm.setDutyCycle(dutyCycle);
 // }, 100);
 
-// setTimeout(() => {
-//     pwm.stop();
-// }, 5000);
+setTimeout(() => {
+    pwm.stop();
+}, 5000);
 // const pin = NanoPi_NEO3.output(NanoPi_NEO3.bcm.GPIO3_B0);
 
 // let value = false;

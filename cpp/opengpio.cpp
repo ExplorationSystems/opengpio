@@ -59,7 +59,7 @@ struct WatchContext
 {
     bool active;
     gpiod::line line;
-    // Napi::ThreadSafeFunction threadSafeWatchCallback;
+    Napi::ThreadSafeFunction threadSafeWatchCallback;
 };
 
 Napi::Array GpioWatch(Napi::CallbackInfo const &info)
@@ -72,15 +72,15 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
     gpiod::line line = chip.get_line(lineNumber);
     string resourceName = "opengpio_" + to_string(chipNumber) + "_" + to_string(lineNumber) + "_watch";
 
-    // Napi::ThreadSafeFunction threadSafeWatchCallback = Napi::ThreadSafeFunction::New(
-    //     info.Env(), watchCallback, resourceName + "_callback", 0, 1, [](Napi::Env) {});
+    Napi::ThreadSafeFunction threadSafeWatchCallback = Napi::ThreadSafeFunction::New(
+        info.Env(), watchCallback, resourceName + "_callback", 0, 1, [](Napi::Env) {});
 
     line.request({resourceName, gpiod::line_request::EVENT_BOTH_EDGES, 0}, 0);
 
     WatchContext *data = new WatchContext();
     data->line = line;
     data->active = true;
-    // data->threadSafeWatchCallback = threadSafeWatchCallback;
+    data->threadSafeWatchCallback = threadSafeWatchCallback;
 
     uv_work_t *req = new uv_work_t;
     req->data = data;
@@ -91,39 +91,33 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
         {
             WatchContext *data = static_cast<WatchContext *>(req->data); // Get the data
             gpiod::line line = data->line;
-            // This is the function that will be executed in the worker (separate) thread
-            while (data->active)
-            { // Continuous loop to generate PWM
-                // bool hasEvent = line.event_wait(chrono::milliseconds(1000));
-                sleep(1);
-                // if (hasEvent)
-                // {
-                //     gpiod::line_event event = line.event_read();
-                //     bool value = event.event_type == gpiod::line_event::RISING_EDGE ? true : false;
-                //     // data->threadSafeWatchCallback.BlockingCall(new bool(value), [](Napi::Env env, Napi::Function watchCallback, bool *value)
-                //     //                                            {
-                //     //                                             watchCallback.Call({Napi::Boolean::New(env, *value)});
-                //     //                                             delete value; });
-                // }
-            }
 
-            printf("Finished\n");
+            while (data->active)
+            {
+                bool hasEvent = line.event_wait(chrono::milliseconds(1));
+                if (hasEvent)
+                {
+                    gpiod::line_event event = line.event_read();
+                    bool value = event.event_type == gpiod::line_event::RISING_EDGE ? true : false;
+                    data->threadSafeWatchCallback.BlockingCall(new bool(value), [](Napi::Env env, Napi::Function watchCallback, bool *value)
+                                                               {
+                                                                watchCallback.Call({Napi::Boolean::New(env, *value)});
+                                                                delete value; });
+                }
+            }
         },
         [](uv_work_t *req, int status)
         {
             WatchContext *data = static_cast<WatchContext *>(req->data);
-            // // data->threadSafeWatchCallback.Release();
+            data->threadSafeWatchCallback.Release();
             data->line.release();
 
             delete req;
             delete data;
-            printf("Done\n");
         });
 
     Napi::Function cleanup = Napi::Function::New(info.Env(), [data](const Napi::CallbackInfo &info)
-                                                 {
-        printf("Cleanup\n");
-        data->active = false; });
+                                                 { data->active = false; });
 
     Napi::Array arr = Napi::Array::New(info.Env(), 1);
     arr.Set(0u, cleanup);
@@ -159,19 +153,18 @@ Napi::Array GpioPwm(Napi::CallbackInfo const &info)
     data->line = line;
     data->active = true;
 
-    uv_loop_t *loop = uv_default_loop();
-    uv_work_t work_req;
-    work_req.data = data;
+    uv_work_t *req = new uv_work_t;
+    req->data = data;
 
     uv_queue_work(
-        loop, &work_req,
+        uv_default_loop(), req,
         [](uv_work_t *req)
         {
             PwmContext *data = static_cast<PwmContext *>(req->data); // Get the data
             gpiod::line line = data->line;
-            // This is the function that will be executed in the worker (separate) thread
+
             while (data->active)
-            { // Continuous loop to generate PWM
+            {
                 int frequency = data->frequency;
                 double dutyCycle = data->dutyCycle;
                 double period = 1.0 / frequency;
@@ -198,6 +191,8 @@ Napi::Array GpioPwm(Napi::CallbackInfo const &info)
             PwmContext *data = static_cast<PwmContext *>(req->data);
             gpiod::line line = data->line;
             line.release();
+
+            delete req;
             delete data;
         });
 
