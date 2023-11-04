@@ -16,7 +16,7 @@ export type FrequencySetter = (frequency: number) => void;
 export type CleanupCallback = () => void;
 export type PinSetter = (value: boolean) => void;
 export type PinGetter = () => boolean;
-export type WatchCallback = (value:boolean) => boolean;
+export type WatchCallback = (value:boolean) => void;
 
 export type OpenGpioBindings = {
     info: () => string;
@@ -25,8 +25,7 @@ export type OpenGpioBindings = {
     watch: (
         chip: number,
         line: number,
-        edge: Edge,
-        callback: WatchCallback
+        callback: WatchCallback,
     ) => [CleanupCallback];
     pwm: (
         chip: number,

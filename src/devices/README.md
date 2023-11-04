@@ -6,7 +6,7 @@ New devices can be added into this folder. A device should extend the Device cla
 
 To implement a new device:
 
--   Copy **\_template.ts** and rename it to your new device, using the following naming convention: Device Name + "\_" + Device Version, in PascalCase or in the manufacturer's preferred case. For example:
+-   Copy **\template.ts** and rename it to your new device, using the following naming convention: Device Name + "\_" + Device Version, in PascalCase or in the manufacturer's preferred case. For example:
     -   RaspberryPi_3B
     -   NanoPi_NEO3 (The provider uses all caps when writing the version name, therefore we should use the providers preferred case instead of PascalCase which would have been Neo3)
 -   Inside your copied template file, rename **TemplateDevice** to device name, using the same naming convention used for the file name.

@@ -59,5 +59,8 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "__mutex_base": "cpp"
+    },
+    "[cpp]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools"
     }
 }
