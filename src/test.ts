@@ -12,11 +12,11 @@ const { NanoPi_NEO3 } = devices;
 //     watch.stop();
 // }, 5000);
 
-setInterval(() => {
-    console.log(1);
-}, 1000);
+// setInterval(() => {
+//     console.log(1);
+// }, 1000);
 
-const pwm = NanoPi_NEO3.pwm(NanoPi_NEO3.bcm.GPIO3_B0, 0.5, 50);
+const pwm = NanoPi_NEO3.pwm(NanoPi_NEO3.bcm.GPIO3_B0, 0.11, 50);
 
 // let freq = 1;
 // setInterval(() => {
@@ -24,25 +24,48 @@ const pwm = NanoPi_NEO3.pwm(NanoPi_NEO3.bcm.GPIO3_B0, 0.5, 50);
 //     pwm.setFrequency(freq);
 // }, 2000)
 
-// Go from 0 to 1 in 10 steps and back to 0 in 10 steps continuously
-// let dutyCycle = 0;
-// let direction = 1;
-// setInterval(() => {
-//     dutyCycle += direction * 0.001;
-//     if (dutyCycle >= 1) {
-//         dutyCycle = 1;
-//         direction = -1;
-//     } else if (dutyCycle <= 0) {
-//         dutyCycle = 0;
-//         direction = 1;
+// Write a fit function that fits a number between -1 and 1 to 0.05 and 0.1
+
+// function fit(number: number, fromMin = -1, fromMax = 1, toMin = 0.05, toMax = 0.1) {
+//     // Ensure the input number is within the [-1, 1] range
+//     if (number < -1) {
+//         number = -1;
+//     } else if (number > 1) {
+//         number = 1;
 //     }
 
-//     pwm.setDutyCycle(dutyCycle);
-// }, 100);
+//     // Map the number to the desired range
+//     const fromRange = fromMax - fromMin;
+//     const toRange = toMax - toMin;
+//     const normalizedNumber = (number - fromMin) / fromRange;
+//     const mappedNumber = normalizedNumber * toRange + toMin;
+
+//     return mappedNumber;
+// }
+
+// setTimeout(() => {
+//     pwm.setDutyCycle(0.071);
+// }, 5000);
 
 setTimeout(() => {
-    pwm.stop();
+    let dutyCycle = 0.06;
+    let direction = 1;
+    setInterval(() => {
+        dutyCycle += direction * 0.0001;
+        if (dutyCycle >= 0.1) {
+            dutyCycle = 0.1;
+            direction = -1;
+        } else if (dutyCycle <= 0.04) {
+            dutyCycle = 0.04;
+            direction = 1;
+        }
+        console.log(dutyCycle);
+        pwm.setDutyCycle(dutyCycle);
+    }, 50);
 }, 5000);
+
+// Go from 0 to 1 in 10 steps and back to 0 in 10 steps continuously
+
 // const pin = NanoPi_NEO3.output(NanoPi_NEO3.bcm.GPIO3_B0);
 
 // let value = false;
