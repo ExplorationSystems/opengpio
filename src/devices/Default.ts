@@ -1,7 +1,6 @@
-import { Gpio } from '../types';
 import { Device } from '../class/Device';
 
-export default class TemplateDevice extends Device {
+export default class Default extends Device {
     static board = {
         0: { chip: 0, line: 0 }
     };

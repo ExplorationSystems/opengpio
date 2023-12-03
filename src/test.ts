@@ -1,7 +1,4 @@
-import { devices } from './main';
-import { Edge } from './types';
-
-const { NanoPi_NEO3 } = devices;
+import { NanoPi_NEO3, Edge } from '.';
 
 // const watch = NanoPi_NEO3.watch(NanoPi_NEO3.bcm.GPIO3_B0, Edge.Both);
 // watch.on('event', (value) => {
