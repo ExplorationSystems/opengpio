@@ -16,7 +16,7 @@ While this library can be used on most devices, you'll need to know the chip and
 - PWM (Native PWM) - This library does not yet support native PWM, only emulated PWM via GPIO.
 - I2C - Use the openi2c library for common i2c module drivers, or alternatively we recommending using the i2c-bus library directly.
 
-## Official Device Drivers
+## Official Device Drivers
 - NanoPI NEO3
 
 ## Using An Official Driver
