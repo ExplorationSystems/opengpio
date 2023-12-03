@@ -4,7 +4,7 @@ OpenGPIO is written using libgpiod, line & chip based abstractions.
 
 While this library can be used on most devices, you'll need to know the chip and line numbers corrisponding to the GPIO pin you want to access. This information can usually be found in the datasheet for your devices SOC. If all that sounds way to complicated, you can make use of one of the official device drivers which already have the bcm and board pin mappings for GPIO pins.
 
-## Pre-requisites
+## Prerequisites
 - libgpiod: `sudo apt install -y libgpiod-dev` - This library requires libgpiod-dev to be installed before installing via npm.
 
 ## Supported Features
@@ -44,4 +44,15 @@ watch.on('event', (value) => {
 // Creates a 50hz (20ms) PWM on the NanoPi NEO3's GPIO3_B0 pin, with a duty cycle of 10% (2ms)
 const pwm = NanoPi_NEO3.pwm(NanoPi_NEO3.bcm.GPIO3_B0, 0.1, 50);
 pwm.setDutyCycle(0.2); // Updates the duty cycle of the pwm to 20% (4ms)
+```
+
+
+## Using An Unofficial Driver
+If no official driver exists, you can use the Default device and provide the chip and line numbers directly. Otherwise, usage is identical.
+```ts
+import { Default, Edge } from 'opengpio';
+
+// GPIO Output
+const output = Default.output({ chip: 0, line: 27 });
+output.value = true; // Set the pin high at chip 0 line 27
 ```
