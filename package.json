@@ -5,8 +5,8 @@
         "node-addon-api": "^7.0.0"
     },
     "name": "opengpio",
-    "version": "1.0.4",
-    "main": "dist/main.js",
+    "version": "1.0.11",
+    "main": "dist/index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "npm run build:cpp",

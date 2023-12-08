@@ -1,4 +1,4 @@
-import { Device } from '../class/Device';
+import { Device } from '../classes';
 
 export default class Default extends Device {
     static board = {

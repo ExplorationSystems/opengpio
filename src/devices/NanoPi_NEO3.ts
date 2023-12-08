@@ -1,4 +1,4 @@
-import { Device } from '../class/Device';
+import { Device } from '../classes/Device';
 
 export default class NanoPi_NEO3 extends Device {
     static board = {
