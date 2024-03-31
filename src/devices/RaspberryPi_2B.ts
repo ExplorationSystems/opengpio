@@ -4,7 +4,7 @@ export default class RaspberryPi_2B extends Device {
     //as of 
     //- https://datasheets.raspberrypi.com/rpi2/raspberry-pi-2-b-reduced-schematics.pdf
     //- https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
-    //- https://pinout.xyz/pinout/pin3_gpio2/ (in [] brackets if different)
+    //- https://pinout.xyz/ (in [] brackets if different)
     //- and the output of gpioinfo (in brackets () if different)
     static board = {
         3: { chip: 0, line: 2 }, //GPIO2 and SDA (SDA1) [I2C1 SDA]
@@ -105,6 +105,7 @@ export default class RaspberryPi_2B extends Device {
         GPIO23: this.board[16],
         GPIO24: this.board[18],
         GPIO25: this.board[22],
-        GPIO26: this.board[37]
+        GPIO26: this.board[37],
+        GPIO27: this.board[13]
     };
 }
