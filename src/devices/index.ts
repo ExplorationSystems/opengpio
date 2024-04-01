@@ -3,4 +3,5 @@ export { default as RaspberryPi_2B } from './RaspberryPi_2B';
 export { default as RaspberryPi_3B } from './RaspberryPi_3B';
 export { default as RaspberryPi_4B } from './RaspberryPi_4B';
 export { default as RaspberryPi_400 } from './RaspberryPi_400';
+export { default as RaspberryPi_5B } from './RaspberryPi_5B';
 export { default as Default } from './Default';
