@@ -13,7 +13,19 @@ Napi::Array GpioInput(Napi::CallbackInfo const &info)
     gpiod::chip chip("gpiochip" + to_string(chipNumber));
     gpiod::line line = chip.get_line(lineNumber);
     string resourceName = "opengpio_" + to_string(chipNumber) + "_" + to_string(lineNumber) + "_input";
-    line.request({resourceName, gpiod::line_request::DIRECTION_INPUT, 0});
+
+    try
+    {
+        line.request({resourceName, gpiod::line_request::DIRECTION_INPUT, 0});
+    }
+    catch (const std::exception &e)
+    {
+        // Create a new Napi::Error
+        Napi::Error error = Napi::Error::New(info.Env(), e.what());
+
+        // Throw the error as a JavaScript exception
+        error.ThrowAsJavaScriptException();
+    }
 
     Napi::Function getter = Napi::Function::New(info.Env(), [line](const Napi::CallbackInfo &info)
                                                 {
