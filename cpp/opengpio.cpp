@@ -20,11 +20,9 @@ Napi::Array GpioInput(Napi::CallbackInfo const &info)
     }
     catch (const std::exception &e)
     {
-        // Create a new Napi::Error
         Napi::Error error = Napi::Error::New(info.Env(), e.what());
-
-        // Throw the error as a JavaScript exception
         error.ThrowAsJavaScriptException();
+        return Napi::Array::New(info.Env());
     }
 
     Napi::Function getter = Napi::Function::New(info.Env(), [line](const Napi::CallbackInfo &info)
@@ -50,7 +48,17 @@ Napi::Array GpioOutput(Napi::CallbackInfo const &info)
     gpiod::chip chip("gpiochip" + to_string(chipNumber));
     gpiod::line line = chip.get_line(lineNumber);
     string resourceName = "opengpio_" + to_string(chipNumber) + "_" + to_string(lineNumber) + "_output";
-    line.request({resourceName, gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);
+
+    try
+    {
+        line.request({resourceName, gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);
+    }
+    catch (const std::exception &e)
+    {
+        Napi::Error error = Napi::Error::New(info.Env(), e.what());
+        error.ThrowAsJavaScriptException();
+        return Napi::Array::New(info.Env());
+    }
 
     Napi::Function setter = Napi::Function::New(info.Env(), [line](const Napi::CallbackInfo &info)
                                                 {
@@ -87,7 +95,16 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
     Napi::ThreadSafeFunction threadSafeWatchCallback = Napi::ThreadSafeFunction::New(
         info.Env(), watchCallback, resourceName + "_callback", 0, 1, [](Napi::Env) {});
 
-    line.request({resourceName, gpiod::line_request::EVENT_BOTH_EDGES, 0}, 0);
+    try
+    {
+        line.request({resourceName, gpiod::line_request::EVENT_BOTH_EDGES, 0}, 0);
+    }
+    catch (const std::exception &e)
+    {
+        Napi::Error error = Napi::Error::New(info.Env(), e.what());
+        error.ThrowAsJavaScriptException();
+        return Napi::Array::New(info.Env());
+    }
 
     Napi::Function getter = Napi::Function::New(info.Env(), [line](const Napi::CallbackInfo &info)
                                                 {
@@ -178,7 +195,17 @@ Napi::Array GpioPwm(Napi::CallbackInfo const &info)
     gpiod::chip chip("gpiochip" + to_string(chipNumber));
     gpiod::line line = chip.get_line(lineNumber);
     string resourceName = "opengpio_" + to_string(chipNumber) + "_" + to_string(lineNumber) + "_pwm";
-    line.request({resourceName, gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);
+    
+    try
+    {
+        line.request({resourceName, gpiod::line_request::EVENT_BOTH_EDGES, 0}, 0);
+    }
+    catch (const std::exception &e)
+    {
+        Napi::Error error = Napi::Error::New(info.Env(), e.what());
+        error.ThrowAsJavaScriptException();
+        return Napi::Array::New(info.Env());
+    }
 
     PwmContext *data = new PwmContext();
     data->frequency = frequency;
