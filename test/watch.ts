@@ -5,6 +5,6 @@ watch.on('change', (value) => {
     console.log(`Edge detected: ${value}`);
 });
 
-setTimeout(() => {
+setInterval(() => {
     console.log('Value', watch.value);
 }, 1000);
