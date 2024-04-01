@@ -5,5 +5,9 @@ const pin = NanoPi_NEO3.output(NanoPi_NEO3.bcm.GPIO0_D3);
 
 setTimeout(() => {
     console.log('Watching the same pin again');
-    const pin = NanoPi_NEO3.output(NanoPi_NEO3.bcm.GPIO0_D3);
+    try {
+        const pin = NanoPi_NEO3.output(NanoPi_NEO3.bcm.GPIO0_D3);
+    } catch (e) {
+        console.log('Should catch as JS error', e);
+    }
 }, 2000);
