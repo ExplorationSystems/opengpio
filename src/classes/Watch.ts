@@ -1,9 +1,10 @@
-import { WatchCallback, Gpio, Edge, CleanupCallback } from '../types';
+import { WatchCallback, Gpio, Edge, CleanupCallback, PinGetter } from '../types';
 import lib from '../lib';
 import { EventEmitter } from 'events';
 
 export class Watch extends EventEmitter {
-    private cleanup: CleanupCallback = () => {};
+    private getter: PinGetter = () => false;
+    private cleanup: CleanupCallback = () => { };
     private stopped: boolean = false;
 
     constructor(
@@ -11,7 +12,7 @@ export class Watch extends EventEmitter {
         private edge: Edge
     ) {
         super();
-        const [cleanup] = lib.watch(gpio.chip, gpio.line, (value) => {
+        const [getter, cleanup] = lib.watch(gpio.chip, gpio.line, (value) => {
             if (value && (edge === Edge.Rising || edge === Edge.Both)) {
                 console.log('Rising Event', value);
                 // Has risen to true
@@ -24,6 +25,10 @@ export class Watch extends EventEmitter {
         });
 
         this.cleanup = cleanup;
+    }
+
+    get value() {
+        return this.getter();
     }
 
     stop() {

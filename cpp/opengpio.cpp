@@ -77,6 +77,11 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
 
     line.request({resourceName, gpiod::line_request::EVENT_BOTH_EDGES, 0}, 0);
 
+    Napi::Function getter = Napi::Function::New(info.Env(), [line](const Napi::CallbackInfo &info)
+                                                {
+        bool value = line.get_value();
+        return Napi::Boolean::New(info.Env(), value); });
+
     WatchContext *data = new WatchContext();
     data->line = line;
     data->active = true;
@@ -119,8 +124,9 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
     Napi::Function cleanup = Napi::Function::New(info.Env(), [data](const Napi::CallbackInfo &info)
                                                  { data->active = false; });
 
-    Napi::Array arr = Napi::Array::New(info.Env(), 1);
-    arr.Set(0u, cleanup);
+    Napi::Array arr = Napi::Array::New(info.Env(), 2);
+    arr.Set(0u, getter);
+    arr.Set(1u, cleanup);
 
     return arr;
 }
