@@ -1,4 +1,4 @@
-import { NanoPi_NEO3, Edge } from '.';
+import { NanoPi_NEO3, Edge } from '../src';
 
 // const watch = NanoPi_NEO3.watch(NanoPi_NEO3.bcm.GPIO3_B0, Edge.Both);
 // watch.on('event', (value) => {
