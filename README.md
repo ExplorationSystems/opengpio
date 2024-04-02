@@ -18,11 +18,18 @@ While this library can be used on most devices, you'll need to know the chip and
 ## Unsupported Features
 
 -   PWM (Native PWM) - This library does not yet support native PWM, only emulated PWM via GPIO.
--   I2C - Use the openi2c library for common i2c module drivers, or alternatively we recommending using the i2c-bus library directly.
+-   I2C - Use the openi2c library for common i2c module drivers (still highly WIP), or alternatively we recommending using the i2c-bus library directly.
 
 ## Official Device Drivers
 
 -   NanoPI NEO3
+-   RaspberryPi 2B
+-   RaspberryPi 3B
+-   RaspberryPi 400
+-   RaspberryPi 4B
+-   RaspberryPi 5B
+-   RaspberryPi Zero2W
+-   RaspberryPi ZeroW
 
 ## Using An Official Driver
 
