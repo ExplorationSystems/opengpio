@@ -22,14 +22,15 @@ While this library can be used on most devices, you'll need to know the chip and
 
 ## Official Device Drivers
 
--   NanoPI NEO3
 -   RaspberryPi 2B
 -   RaspberryPi 3B
+-   RaspberryPi 3B+
 -   RaspberryPi 400
 -   RaspberryPi 4B
 -   RaspberryPi 5B
 -   RaspberryPi Zero2W
 -   RaspberryPi ZeroW
+-   NanoPI NEO3
 
 ## Using An Official Driver
 
