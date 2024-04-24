@@ -11,41 +11,41 @@ _a = RaspberryPi_4B;
 //- https://pinout.xyz/ (in [] brackets if different)
 //- and the output of gpioinfo (in brackets () if different)
 RaspberryPi_4B.board = {
-    3: { chip: 0, line: 2 },
-    5: { chip: 0, line: 3 },
-    7: { chip: 0, line: 4 },
-    8: { chip: 0, line: 14 },
-    10: { chip: 0, line: 15 },
-    11: { chip: 0, line: 17 },
-    12: { chip: 0, line: 18 },
-    13: { chip: 0, line: 27 },
-    15: { chip: 0, line: 22 },
-    16: { chip: 0, line: 23 },
-    18: { chip: 0, line: 24 },
-    19: { chip: 0, line: 10 },
-    21: { chip: 0, line: 9 },
-    22: { chip: 0, line: 25 },
-    23: { chip: 0, line: 11 },
-    24: { chip: 0, line: 8 },
-    26: { chip: 0, line: 7 },
-    27: { chip: 0, line: 0 },
-    28: { chip: 0, line: 1 },
-    29: { chip: 0, line: 5 },
-    31: { chip: 0, line: 6 },
-    32: { chip: 0, line: 12 },
-    33: { chip: 0, line: 13 },
-    35: { chip: 0, line: 19 },
-    36: { chip: 0, line: 16 },
-    37: { chip: 0, line: 26 },
-    38: { chip: 0, line: 20 },
+    3: { chip: 0, line: 2 }, //GPIO2
+    5: { chip: 0, line: 3 }, //GPIO3
+    7: { chip: 0, line: 4 }, //GPIO4
+    8: { chip: 0, line: 14 }, //GPIO14
+    10: { chip: 0, line: 15 }, //GPIO15
+    11: { chip: 0, line: 17 }, //GPIO17
+    12: { chip: 0, line: 18 }, //GPIO18
+    13: { chip: 0, line: 27 }, //GPIO27
+    15: { chip: 0, line: 22 }, //GPIO22
+    16: { chip: 0, line: 23 }, //GPIO23
+    18: { chip: 0, line: 24 }, //GPIO24
+    19: { chip: 0, line: 10 }, //GPIO10
+    21: { chip: 0, line: 9 }, //GPIO9
+    22: { chip: 0, line: 25 }, //GPIO25
+    23: { chip: 0, line: 11 }, //GPIO11
+    24: { chip: 0, line: 8 }, //GPIO8
+    26: { chip: 0, line: 7 }, //GPIO7
+    27: { chip: 0, line: 0 }, //GPIO0 and ID_SD (ID_SDA) [EEPROM SDA]
+    28: { chip: 0, line: 1 }, //GPIO1 and ID_SC (ID_SCL) [EEPROM SCL]
+    29: { chip: 0, line: 5 }, //GPIO5
+    31: { chip: 0, line: 6 }, //GPIO6
+    32: { chip: 0, line: 12 }, //GPIO12
+    33: { chip: 0, line: 13 }, //GPIO13
+    35: { chip: 0, line: 19 }, //GPIO19
+    36: { chip: 0, line: 16 }, //GPIO16
+    37: { chip: 0, line: 26 }, //GPIO26
+    38: { chip: 0, line: 20 }, //GPIO20
     40: { chip: 0, line: 21 } //GPIO21
 };
 RaspberryPi_4B.bcm = {
-    GPIO0: _a.board[27],
+    GPIO0: _a.board[27], //GPIO0 and ID_SD (ID_SDA) [EEPROM SDA]
     ID_SD: _a.board[27],
     ID_SDA: _a.board[27],
     EEPROM_SDA: _a.board[27],
-    GPIO1: _a.board[28],
+    GPIO1: _a.board[28], //GPIO1 and ID_SC (ID_SCL) [EEPROM SCL]
     ID_SC: _a.board[28],
     ID_SCL: _a.board[28],
     EEPROM_SCL: _a.board[28],

@@ -1,15 +1,14 @@
-import { Gpio } from '../types';
+import { Gpio, GpioOptions } from '../types';
 export declare enum Direction {
     Input = 0,
     Output = 1
 }
 export declare class Pin {
-    private readonly gpio;
-    private readonly direction;
+    readonly direction: Direction;
     private getter;
     private setter;
     private cleanup;
-    constructor(gpio: Gpio, direction: Direction);
+    constructor(gpio: Gpio, direction: Direction, options?: GpioOptions);
     stop(): void;
     get value(): boolean;
     set value(value: boolean);

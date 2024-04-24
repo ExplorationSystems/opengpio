@@ -10,15 +10,17 @@ var Direction;
     Direction[Direction["Input"] = 0] = "Input";
     Direction[Direction["Output"] = 1] = "Output";
 })(Direction || (exports.Direction = Direction = {}));
+// TODO Make separate input / output classes with parent abstract class.
 class Pin {
-    constructor(gpio, direction) {
-        this.gpio = gpio;
+    constructor(gpio, direction, options = {}) {
+        var _a, _b;
         this.direction = direction;
         this.getter = () => false;
         this.setter = () => { };
         this.cleanup = () => { };
         if (direction === Direction.Input) {
-            const [getter, cleanup] = lib_1.default.input(gpio.chip, gpio.line);
+            // TODO Update chip to string and naming of line to offset
+            const [getter, cleanup] = lib_1.default.input('gpiochip' + gpio.chip, gpio.line, (_a = options.bias) !== null && _a !== void 0 ? _a : 0, (_b = options.debounce) !== null && _b !== void 0 ? _b : 0);
             this.getter = getter;
             this.cleanup = cleanup;
         }

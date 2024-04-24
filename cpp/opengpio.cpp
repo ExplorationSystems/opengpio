@@ -7,48 +7,62 @@ using namespace std;
 
 Napi::Array GpioInput(Napi::CallbackInfo const &info)
 {
-    int chip_number = info[0].As<Napi::Number>().Int32Value(); // TODO should this be chip path?
-    int line_offset = info[1].As<Napi::Number>().Int32Value();
-    string consumer_name = "opengpio_" + to_string(chip_number) + "_" + to_string(line_offset) + "_input";
+    std::string chip_path = info[0].As<Napi::String>().Utf8Value();              // TODO should this be chip path? Eg /dev/gpiochip0? Perhaps this should be sent from JS
+    ::gpiod::line::offset line_offset = info[1].As<Napi::Number>().Int32Value(); // TODO can this use get_line_offset_from_name? Should try send from JS. See libgpiod examples for reference.
+    int bias = info[2].As<Napi::Number>().Int32Value();
+    int debounce = info[3].As<Napi::Number>().Int32Value();
 
-    auto request =
-        ::gpiod::chip(chip_number)
-            .prepare_request()
-            .set_consumer(consumer_name)
-            .add_line_settings(
-                line_offset,
-                ::gpiod::line_settings()
-                    .set_direction(
-                        ::gpiod::line::direction::INPUT)
-                    .set_edge_detection(
-                        ::gpiod::line::edge::BOTH)
-                    .set_bias(::gpiod::line::bias::PULL_UP)
-                    .set_debounce_period(
-                        std::chrono::milliseconds(10)))
-            .do_request();
-    gpiod::chip chip("gpiochip" + to_string(chip_number));
-    gpiod::line line = chip.get_line(line_offset);
+    ::gpiod::line_request *request = nullptr;
 
-    // try
-    // {
-    //     line.request({resourceName, gpiod::line_request::DIRECTION_INPUT, 0});
-    // }
-    // catch (const std::exception &e)
-    // {
-    //     Napi::Error error = Napi::Error::New(info.Env(), e.what());
-    //     error.ThrowAsJavaScriptException();
-    //     return Napi::Array::New(info.Env());
-    // }
+    try
+    {
+        ::gpiod::line_settings line_settings = ::gpiod::line_settings();
+        line_settings.set_direction(
+            ::gpiod::line::direction::INPUT);
 
-    // Napi::Function getter = Napi::Function::New(info.Env(), [line](const Napi::CallbackInfo &info)
-    //                                             {
-    //     bool value = line.get_value();
-    //     return Napi::Boolean::New(info.Env(), value); });
+        // Setup line bias, if 0 then don't run set_bias.
+        if (bias >= 1 && bias <= 5)
+        {
+            // C++ Bias ::gpiod::line::bias has the following int references.
+            // Bias enum: 1 = AS_IS, 2 = UNKNOWN, 3 = DISABLED, 4 = PULL_UP, 5 = PULL_DOWN
+            line_settings.set_bias(static_cast<::gpiod::line::bias>(bias));
+        }
 
-    // Napi::Function cleanup = Napi::Function::New(info.Env(), [line](const Napi::CallbackInfo &info)
-    //                                              { line.release(); });
+        // Set debounce if provided in milliseconds
+        // TODO debounce only relevant on watch
+        if (debounce > 0)
+        {
+            line_settings.set_debounce_period(
+                std::chrono::milliseconds(debounce));
+        }
+
+        request = new ::gpiod::line_request(::gpiod::chip(chip_path)
+                                                .prepare_request()
+                                                .set_consumer("opengpio_" + chip_path + "_" + to_string(line_offset) + "_input")
+                                                .add_line_settings(
+                                                    line_offset,
+                                                    line_settings)
+                                                .do_request());
+    }
+    catch (const std::exception &e)
+    {
+        Napi::Error error = Napi::Error::New(info.Env(), e.what());
+        error.ThrowAsJavaScriptException();
+        return Napi::Array::New(info.Env());
+    }
+
+    Napi::Function getter = Napi::Function::New(info.Env(), [request, line_offset](const Napi::CallbackInfo &info)
+                                                {
+    bool value = request->get_value(line_offset) == ::gpiod::line::value::ACTIVE ? true : false;
+    return Napi::Boolean::New(info.Env(), value); });
+
+    Napi::Function cleanup = Napi::Function::New(info.Env(), [request](const Napi::CallbackInfo &info)
+                                                 { request->release(); });
 
     Napi::Array arr = Napi::Array::New(info.Env(), 2);
+    arr.Set(0u, getter);
+    arr.Set(1u, cleanup);
+
     return arr;
 }
 

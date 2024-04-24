@@ -7,7 +7,12 @@ While this library can be used on most devices, you'll need to know the chip and
 
 ## Prerequisites
 
--   libgpiod: `sudo apt install -y libgpiod-dev` - This library requires libgpiod-dev to be installed before installing via npm.
+-   libgpiod: 
+    ```
+    sudo apt-get update
+    sudo apt-get install libgpiod2
+    ``` 
+- This library requires libgpiod-dev to be installed before installing via npm.
 
 ## Supported Features
 
@@ -17,7 +22,7 @@ While this library can be used on most devices, you'll need to know the chip and
 
 ## Unsupported Features
 
--   PWM (Native PWM) - This library does not yet support native PWM, only emulated PWM via GPIO.
+-   Native PWM - This library does not yet support native PWM, only emulated PWM via GPIO.
 -   I2C - Use the openi2c library for common i2c module drivers (still highly WIP), or alternatively we recommending using the i2c-bus library directly.
 
 ## Official Device Drivers

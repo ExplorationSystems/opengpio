@@ -3,6 +3,7 @@
     "editor.formatOnSave": true,
     "prettier.tabWidth": 4,
     "files.associations": {
+        "*.cpp": "cpp",
         "array": "cpp",
         "atomic": "cpp",
         "bit": "cpp",
@@ -58,7 +59,15 @@
         "thread": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "__mutex_base": "cpp"
+        "__mutex_base": "cpp",
+        "codecvt": "cpp",
+        "map": "cpp",
+        "optional": "cpp",
+        "regex": "cpp",
+        "fstream": "cpp",
+        "iomanip": "cpp",
+        "shared_mutex": "cpp",
+        "sstream": "cpp"
     },
     "[cpp]": {
         "editor.defaultFormatter": "ms-vscode.cpptools"
