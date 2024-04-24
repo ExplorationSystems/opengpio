@@ -1,0 +1,4 @@
+[submodule "cpp/libgpiod"]
+	path = cpp/libgpiod
+	url = https://github.com/brgl/libgpiod.git
+	branch = v2.1.x
