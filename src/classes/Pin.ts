@@ -15,7 +15,8 @@ export class Pin {
     constructor(gpio: Gpio, readonly direction: Direction, options: GpioOptions = {}) {
         if (direction === Direction.Input) {
             // TODO Update chip to string and naming of line to offset
-            const [getter, cleanup] = lib.input('/dev/gpiochip' + gpio.chip, gpio.line, options.bias ?? 0, options.debounce ?? 0)
+            console.log('Setting bias', options.bias ?? 0)
+            const [getter, cleanup] = lib.input(gpio.chip, gpio.line, options.bias ?? 0)
             this.getter = getter;
             this.cleanup = cleanup;
         } else if (direction === Direction.Output) {

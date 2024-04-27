@@ -10,8 +10,8 @@ export type Gpio = {
 };
 
 export enum Bias {
-    AsIs = 1,
-    Unknown = 2,
+    // AsIs = 1,
+    // Unknown = 2,
     Disabled = 3,
     PullUp = 4,
     PullDown = 5
@@ -27,11 +27,13 @@ export type WatchCallback = (value: boolean) => void;
 
 export type OpenGpioBindings = {
     info: () => string;
-    input: (chip: string, line: number, bias: number, debounce: number) => [PinGetter, CleanupCallback];
+    input: (chip: number, line: number, bias: number) => [PinGetter, CleanupCallback];
     output: (chip: number, line: number) => [PinSetter, CleanupCallback];
     watch: (
         chip: number,
         line: number,
+        bias: number,
+        debounce: number,
         callback: WatchCallback,
     ) => [PinGetter, CleanupCallback];
     pwm: (
@@ -42,7 +44,9 @@ export type OpenGpioBindings = {
     ) => [DutyCycleSetter, FrequencySetter, CleanupCallback];
 };
 
-export type GpioOptions = {
+export type GpioInputOptions = {
     debounce?: number;
     bias?: Bias;
 }
+
+export type GpioOutputOptions = {}
