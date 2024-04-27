@@ -1,9 +1,15 @@
-import { NanoPi_NEO3, Edge, Bias } from '../src';
-const input = NanoPi_NEO3.input(NanoPi_NEO3.bcm.GPIO3_B0, {
-    debounce: 20, // TODO probably not nessesary for input, only watch.
+import { NanoPi_NEO3, Bias } from '../src';
+const input = NanoPi_NEO3.input(NanoPi_NEO3.bcm.GPIO2_B7, {
     bias: Bias.PullUp
 });
 
-setTimeout(() => {
-    console.log('Input', input.value);
-}, 5000);
+console.log("Input", input)
+
+setInterval(() => {
+    console.log('Value', input.value);
+}, 1000);
+
+process.on('beforeExit', () => {
+    console.log('Close')
+    input.stop();
+})
