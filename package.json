@@ -9,7 +9,8 @@
     "main": "dist/index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "./build-libgpiod.sh && ./npm run build:cpp",
+        "preinstall": "./build-libgpiod.sh",
+        "build": "npm run build:cpp",
         "build:cpp": "node-gyp configure build",
         "build:ts": "rm -rf dist; tsc",
         "build:ts:watch": "npm run build:ts -- --watch",
