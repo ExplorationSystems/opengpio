@@ -20,7 +20,7 @@ export class Device {
     ) {
         return new Watch(gpio, edge, options);
     }
-    static pwm(gpio: Gpio, dutyCycle: number, frequency: number) {
-        return new Pwm(gpio, dutyCycle, frequency);
+    static pwm(gpio: Gpio, dutyCycle: number, frequency: number, options: GpioOutputOptions = {}) {
+        return new Pwm(gpio, dutyCycle, frequency, options);
     }
 }

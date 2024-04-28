@@ -201,13 +201,14 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
         {
             WatchContext *data = static_cast<WatchContext *>(req->data);
             ::gpiod::edge_event_buffer buffer(1);
+            ::gpiod::line_request *request = data->request;
 
             while (data->active)
             {
-                bool has_event = data->request->wait_edge_events(chrono::milliseconds(1));
+                bool has_event = request->wait_edge_events(chrono::milliseconds(1));
                 if (has_event)
                 {
-                    data->request->read_edge_events(buffer);
+                    request->read_edge_events(buffer);
 
                     // ::gpiod::edge_event &event = buffer[0];
                     for (const auto &event : buffer)
@@ -239,13 +240,138 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
     return arr;
 }
 
+struct PwmContext
+{
+    int frequency;
+    double duty_cycle;
+    int line_offset;
+    bool active;
+    ::gpiod::line_request *request;
+};
+
+void WaitBlocking(long nanoseconds)
+{
+    // In a while loop continue to loop until the time has passed
+    auto start = chrono::high_resolution_clock::now();
+    while (true)
+    {
+        auto now = chrono::high_resolution_clock::now();
+        long diff = chrono::duration_cast<std::chrono::nanoseconds>(now - start).count();
+        if (diff >= nanoseconds)
+        {
+            break;
+        }
+    }
+}
+
+Napi::Array GpioPwm(Napi::CallbackInfo const &info)
+{
+
+    // Inputs
+    int chip_number = info[0].As<Napi::Number>().Int32Value();
+    std::string chip_path = "/dev/gpiochip" + to_string(chip_number);
+    ::gpiod::line::offset line_offset = info[1].As<Napi::Number>().Int32Value(); // TODO can this use get_line_offset_from_name? Should try send from JS. See libgpiod examples for reference.
+    double duty_cycle = info[2].As<Napi::Number>().DoubleValue();
+    int frequency = info[3].As<Napi::Number>().Int32Value();
+
+    // Resources
+    ::gpiod::line_request *request = nullptr;
+    string consumer_name = "opengpio_" + chip_path + "_" + to_string(line_offset) + "_pwm";
+
+    // Setup
+    try
+    {
+        ::gpiod::line_settings line_settings = ::gpiod::line_settings();
+        line_settings
+            .set_direction(::gpiod::line::direction::OUTPUT);
+
+        request = new ::gpiod::line_request(::gpiod::chip(chip_path)
+                                                .prepare_request()
+                                                .set_consumer(consumer_name)
+                                                .add_line_settings(
+                                                    line_offset,
+                                                    line_settings)
+                                                .do_request());
+    }
+    catch (const std::exception &e)
+    {
+        Napi::Error error = Napi::Error::New(info.Env(), e.what());
+        error.ThrowAsJavaScriptException();
+        return Napi::Array::New(info.Env());
+    }
+
+    PwmContext *data = new PwmContext();
+    data->frequency = frequency;
+    data->duty_cycle = duty_cycle;
+    data->request = request;
+    data->active = true;
+    data->line_offset = line_offset;
+
+    uv_work_t *req = new uv_work_t;
+    req->data = data;
+
+    uv_queue_work(
+        uv_default_loop(), req,
+        [](uv_work_t *req)
+        {
+            PwmContext *data = static_cast<PwmContext *>(req->data); // Get the data
+            ::gpiod::line_request *request = data->request;
+            int line_offset = data->line_offset;
+
+            while (data->active)
+            {
+                int frequency = data->frequency;
+                double duty_cycle = data->duty_cycle;
+                double period = 1.0 / frequency;
+                double on_time = period * duty_cycle;
+                double off_time = period - on_time;
+                long on_time_ns = on_time * 1e9;
+                long off_time_ns = off_time * 1e9;
+
+                request->set_value(line_offset, ::gpiod::line::value::ACTIVE);
+                WaitBlocking(on_time_ns);
+
+                request->set_value(line_offset, ::gpiod::line::value::INACTIVE);
+                WaitBlocking(off_time_ns);
+            }
+        },
+        [](uv_work_t *req, int status)
+        {
+            PwmContext *data = static_cast<PwmContext *>(req->data);
+            data->request->release();
+
+            delete req;
+            delete data;
+        });
+
+    Napi::Function duty_cycle_setter = Napi::Function::New(info.Env(), [data](const Napi::CallbackInfo &info)
+                                                           {
+        double duty_cycle = info[0].As<Napi::Number>().DoubleValue();
+        data->duty_cycle = duty_cycle; });
+
+    Napi::Function frequency_setter = Napi::Function::New(info.Env(), [data](const Napi::CallbackInfo &info)
+                                                          {
+        int frequency = info[0].As<Napi::Number>().Int32Value();
+        data->frequency = frequency; });
+
+    Napi::Function cleanup = Napi::Function::New(info.Env(), [data](const Napi::CallbackInfo &info)
+                                                 { data->active = false; });
+
+    Napi::Array arr = Napi::Array::New(info.Env(), 2);
+    arr.Set(0u, duty_cycle_setter);
+    arr.Set(1u, frequency_setter);
+    arr.Set(2u, cleanup);
+
+    return arr;
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
     exports["info"] = Napi::Function::New(env, Info);
     exports["input"] = Napi::Function::New(env, GpioInput);
     exports["output"] = Napi::Function::New(env, GpioOutput);
     exports["watch"] = Napi::Function::New(env, GpioWatch);
-    // exports["pwm"] = Napi::Function::New(env, GpioPwm);
+    exports["pwm"] = Napi::Function::New(env, GpioPwm);
     return exports;
 }
 
