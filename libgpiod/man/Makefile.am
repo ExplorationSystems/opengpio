@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2017-2021 Bartosz Golaszewski <bartekgola@gmail.com>
+
+if WITH_MANPAGES
+
+dist_man1_MANS = \
+	gpiodetect.man \
+	gpioinfo.man \
+	gpioget.man \
+	gpioset.man \
+	gpiomon.man \
+	gpionotify.man
+
+%.man: $(top_builddir)/tools/$(*F)
+	$(AM_V_GEN)help2man $(top_builddir)/tools/$(*F) --include=$(srcdir)/template --output=$(builddir)/$@ --no-info
+
+clean-local:
+	rm -f $(dist_man1_MANS)
+
+endif
+
+EXTRA_DIST = template
