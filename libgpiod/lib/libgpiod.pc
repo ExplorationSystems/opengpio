@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2017-2021 Bartosz Golaszewski <bartekgola@gmail.com>
+# SPDX-FileCopyrightText: 2018 Clemens Gruber <clemens.gruber@pqgruber.com>
+
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libgpiod
+Description: Library and tools for the Linux GPIO chardev
+URL: 
+Version: 2.1.1
+Libs: -L${libdir} -lgpiod
+Cflags: -I${includedir}
