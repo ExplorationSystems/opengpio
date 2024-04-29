@@ -1,4 +1,6 @@
 "use strict";
+process.env.LD_LIBRARY_PATH = '/root/opengpio/cpp/bindings/arm'; //path.join(__dirname, '../libgpiod/bindings/cxx/.libs') + (process.env.LD_LIBRARY_PATH ? ':' + process.env.LD_LIBRARY_PATH : '');
+
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
