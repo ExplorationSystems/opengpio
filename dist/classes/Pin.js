@@ -20,7 +20,8 @@ class Pin {
         this.cleanup = () => { };
         if (direction === Direction.Input) {
             // TODO Update chip to string and naming of line to offset
-            const [getter, cleanup] = lib_1.default.input('gpiochip' + gpio.chip, gpio.line, (_a = options.bias) !== null && _a !== void 0 ? _a : 0, (_b = options.debounce) !== null && _b !== void 0 ? _b : 0);
+            console.log('Setting bias', (_a = options.bias) !== null && _a !== void 0 ? _a : 0);
+            const [getter, cleanup] = lib_1.default.input(gpio.chip, gpio.line, (_b = options.bias) !== null && _b !== void 0 ? _b : 0);
             this.getter = getter;
             this.cleanup = cleanup;
         }

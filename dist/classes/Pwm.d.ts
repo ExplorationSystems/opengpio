@@ -1,4 +1,4 @@
-import { Gpio } from "../types";
+import { Gpio, GpioInputOptions } from "../types";
 export declare class Pwm {
     private gpio;
     private dutyCycle;
@@ -7,7 +7,7 @@ export declare class Pwm {
     private frequencySetter;
     private cleanup;
     private stopped;
-    constructor(gpio: Gpio, dutyCycle: number, frequency?: number);
+    constructor(gpio: Gpio, dutyCycle: number, frequency?: number, options?: GpioInputOptions);
     stop(): void;
     setDutyCycle(dutyCycle: number): void;
     setFrequency(frequency: number): void;

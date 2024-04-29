@@ -8,7 +8,7 @@
             "<(module_root_dir)/libgpiod/bindings/cxx"
         ],  
         "libraries": [
-            "-lgpiodcxx"
+            "-L<(module_root_dir)/libgpiod/bindings/cxx/.libs/ -lgpiodcxx",
         ],
         "cflags_cc!": ["-fno-exceptions"],
         "defines": [ "NAPI_DISABLE_CPP_EXCEPTIONS" ],

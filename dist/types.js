@@ -9,8 +9,8 @@ var Edge;
 })(Edge || (exports.Edge = Edge = {}));
 var Bias;
 (function (Bias) {
-    Bias[Bias["AsIs"] = 1] = "AsIs";
-    Bias[Bias["Unknown"] = 2] = "Unknown";
+    // AsIs = 1,
+    // Unknown = 2,
     Bias[Bias["Disabled"] = 3] = "Disabled";
     Bias[Bias["PullUp"] = 4] = "PullUp";
     Bias[Bias["PullDown"] = 5] = "PullDown";

@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pwm = void 0;
 const lib_1 = __importDefault(require("../lib"));
 class Pwm {
-    constructor(gpio, dutyCycle, frequency = 50) {
+    constructor(gpio, dutyCycle, frequency = 50, options = {}) {
         this.gpio = gpio;
         this.dutyCycle = dutyCycle;
         this.frequency = frequency;

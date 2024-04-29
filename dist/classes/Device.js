@@ -8,14 +8,14 @@ class Device {
     static input(gpio, options = {}) {
         return new Pin_1.Pin(gpio, Pin_1.Direction.Input, options);
     }
-    static output(gpio) {
-        return new Pin_1.Pin(gpio, Pin_1.Direction.Output);
+    static output(gpio, options = {}) {
+        return new Pin_1.Pin(gpio, Pin_1.Direction.Output, options);
     }
-    static watch(gpio, edge) {
-        return new Watch_1.Watch(gpio, edge);
+    static watch(gpio, edge, options = {}) {
+        return new Watch_1.Watch(gpio, edge, options);
     }
-    static pwm(gpio, dutyCycle, frequency) {
-        return new Pwm_1.Pwm(gpio, dutyCycle, frequency);
+    static pwm(gpio, dutyCycle, frequency, options = {}) {
+        return new Pwm_1.Pwm(gpio, dutyCycle, frequency, options);
     }
 }
 exports.Device = Device;
