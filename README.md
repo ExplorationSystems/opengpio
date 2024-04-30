@@ -7,12 +7,24 @@ While this library can be used on most devices, you'll need to know the chip and
 
 ## Prerequisites
 
--   libgpiod: 
+-   libgpiod 2.1
+    Libgpiod version 2.1 needs to be built from source (Don't worry it's easy).
+
+    ``` sh
+    # Ensure build dependancies
+    sudo apt install tar gzip build-essential autoconf curl
+    
+    # Fetch libgpiod
+    curl -o libgpiod-2.1.tar.gz 'https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/snapshot/libgpiod-2.1.tar.gz'
+    tar xf libgpiod-2.1.tar.gz
+    cd libgpiod-2.1
+    
+    # Make libgpiod
+    make
+    make install
     ```
-    sudo apt-get update
-    sudo apt-get install libgpiod2
-    ``` 
-- This library requires libgpiod-dev to be installed before installing via npm.
+    
+
 
 ## Supported Features
 
