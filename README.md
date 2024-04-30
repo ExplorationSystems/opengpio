@@ -7,8 +7,9 @@ While this library can be used on most devices, you'll need to know the chip and
 
 ## Prerequisites
 
--   libgpiod 2.1
-    Libgpiod version 2.1 needs to be built from source (Don't worry it's easy).
+-   **libgpiod 2.1**
+
+    Libgpiod 2.1 needs to be built from source (Don't worry it's easy).
 
     ``` sh
     # Ensure build dependancies
