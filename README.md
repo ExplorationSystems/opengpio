@@ -20,6 +20,7 @@ While this library can be used on most devices, you'll need to know the chip and
     cd libgpiod-2.1
     
     # Make libgpiod
+    ./autogen.sh --enable-bindings-cxx
     make
     make install
     ```
