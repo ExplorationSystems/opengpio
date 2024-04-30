@@ -23,6 +23,9 @@ While this library can be used on most devices, you'll need to know the chip and
     make
     make install
     ```
+
+    **Debugging**
+    If after installing libgpiod you encounter issues loading libgpiod with errors like: `Error: libgpiodcxx.so.2: cannot open shared object file: No such file or directory`, you may need to update the system library cache. You can do this by running: `sudo ldconfig`
     
 
 
