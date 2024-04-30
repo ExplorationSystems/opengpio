@@ -27,7 +27,6 @@ Napi::Array GpioInput(Napi::CallbackInfo const &info)
         // Setup line bias, if 0 then don't run set_bias.
         if (bias >= 1 && bias <= 5)
         {
-            printf("Setting bias\n");
             // C++ Bias ::gpiod::line::bias has the following int references.
             // Bias enum: 1 = AS_IS, 2 = UNKNOWN, 3 = DISABLED, 4 = PULL_UP, 5 = PULL_DOWN
             line_settings.set_bias(static_cast<::gpiod::line::bias>(bias));
