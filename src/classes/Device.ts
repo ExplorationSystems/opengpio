@@ -1,17 +1,18 @@
 import { Edge, Gpio, GpioOutputOptions, GpioInputOptions } from '../types';
 import { Pwm } from './Pwm';
-import { Direction, Pin } from './Pin';
 import { Watch } from './Watch';
+import { Input } from './Input';
+import { Output } from './Output';
 
 export class Device {
     static board: Record<number, Gpio> = {};
     static bcm: Record<string, Gpio> = {};
 
     static input(gpio: Gpio, options: Omit<GpioInputOptions, 'debounce'> = {}) {
-        return new Pin(gpio, Direction.Input, options);
+        return new Input(gpio, options);
     }
     static output(gpio: Gpio, options: GpioOutputOptions = {}) {
-        return new Pin(gpio, Direction.Output, options);
+        return new Output(gpio, options);
     }
     static watch(
         gpio: Gpio,
