@@ -1,11 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Watch = void 0;
 const types_1 = require("../types");
-const lib_1 = __importDefault(require("../lib"));
+const bindings_1 = require("../bindings");
 const events_1 = require("events");
 class Watch extends events_1.EventEmitter {
     constructor(gpio, edge, options = {}) {
@@ -15,7 +12,7 @@ class Watch extends events_1.EventEmitter {
         this.getter = () => false;
         this.cleanup = () => { };
         this.stopped = false;
-        const [getter, cleanup] = lib_1.default.watch(gpio.chip, gpio.line, (_a = options.debounce) !== null && _a !== void 0 ? _a : 0, (_b = options.bias) !== null && _b !== void 0 ? _b : 0, (value) => {
+        const [getter, cleanup] = bindings_1.bindings.watch(gpio.chip, gpio.line, (_a = options.debounce) !== null && _a !== void 0 ? _a : 0, (_b = options.bias) !== null && _b !== void 0 ? _b : 0, (value) => {
             if (value && (edge === types_1.Edge.Rising || edge === types_1.Edge.Both)) {
                 console.log('Rising Event', value);
                 // Has risen to true

@@ -45,7 +45,7 @@
         "watch",
         "libgpio",
         "libgpiod",
-        "2.1",
+        "2.1"
     ],
     "author": "",
     "license": "MIT",

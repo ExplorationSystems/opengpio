@@ -1,5 +1,5 @@
 import { CleanupCallback, DutyCycleSetter, FrequencySetter, Gpio, GpioOutputOptions } from "../types";
-import lib from '../lib';
+import { bindings } from '../bindings';
 
 export class Pwm {
     private dutyCycleSetter: DutyCycleSetter = () => { };
@@ -10,7 +10,7 @@ export class Pwm {
 
     constructor(private gpio: Gpio, private dutyCycle: number, private frequency: number = 50, options: GpioOutputOptions = {}) {
         // Currently options is not used by lib.pwm but is added for future parameters.
-        const [setDutyCycle, setFrequency, cleanup] = lib.pwm(gpio.chip, gpio.line, dutyCycle, frequency);
+        const [setDutyCycle, setFrequency, cleanup] = bindings.pwm(gpio.chip, gpio.line, dutyCycle, frequency);
         this.dutyCycleSetter = setDutyCycle;
         this.frequencySetter = setFrequency;
         this.cleanup = cleanup;

@@ -1,10 +1,7 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pwm = void 0;
-const lib_1 = __importDefault(require("../lib"));
+const bindings_1 = require("../bindings");
 class Pwm {
     constructor(gpio, dutyCycle, frequency = 50, options = {}) {
         this.gpio = gpio;
@@ -15,7 +12,7 @@ class Pwm {
         this.cleanup = () => { };
         this.stopped = false;
         // Currently options is not used by lib.pwm but is added for future parameters.
-        const [setDutyCycle, setFrequency, cleanup] = lib_1.default.pwm(gpio.chip, gpio.line, dutyCycle, frequency);
+        const [setDutyCycle, setFrequency, cleanup] = bindings_1.bindings.pwm(gpio.chip, gpio.line, dutyCycle, frequency);
         this.dutyCycleSetter = setDutyCycle;
         this.frequencySetter = setFrequency;
         this.cleanup = cleanup;

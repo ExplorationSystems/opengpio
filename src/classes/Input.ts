@@ -1,4 +1,4 @@
-import lib from '../lib';
+import { bindings } from '../bindings';
 import { CleanupCallback, Gpio, PinGetter, PinSetter, GpioInputOptions } from '../types';
 
 export class Input {
@@ -6,7 +6,7 @@ export class Input {
     private cleanup: CleanupCallback = () => { };
 
     constructor(gpio: Gpio, options: GpioInputOptions = {}) {
-        const [getter, cleanup] = lib.input(gpio.chip, gpio.line, options.bias ?? 0)
+        const [getter, cleanup] = bindings.input(gpio.chip, gpio.line, options.bias ?? 0)
         this.getter = getter;
         this.cleanup = cleanup;
     }
