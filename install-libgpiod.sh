@@ -4,7 +4,7 @@ rm -rf libgpiod-2.1
 
 # Ensure build dependancies
 echo "Ensure build dependancies"
-sudo apt install tar gzip build-essential autoconf curl
+sudo apt install tar gzip build-essential autoconf curl automake autoconf-archive
 
 # Fetch libgpiod on branch 2.1.x
 echo "Fetching libgpiod v2.1"
