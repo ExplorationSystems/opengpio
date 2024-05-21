@@ -195,10 +195,10 @@ Napi::Array GpioPwm(Napi::CallbackInfo const &info)
     gpiod::chip chip("gpiochip" + to_string(chipNumber));
     gpiod::line line = chip.get_line(lineNumber);
     string resourceName = "opengpio_" + to_string(chipNumber) + "_" + to_string(lineNumber) + "_pwm";
-    
+
     try
     {
-        line.request({resourceName, gpiod::line_request::EVENT_BOTH_EDGES, 0}, 0);
+        line.request({resourceName, gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);
     }
     catch (const std::exception &e)
     {
