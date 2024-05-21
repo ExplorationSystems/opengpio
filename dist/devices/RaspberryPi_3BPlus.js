@@ -2,15 +2,15 @@
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 const Device_1 = require("../classes/Device");
-class RaspberryPi_ZeroW extends Device_1.Device {
+class RaspberryPi_3BPlus extends Device_1.Device {
 }
-_a = RaspberryPi_ZeroW;
+_a = RaspberryPi_3BPlus;
 //as of 
-//- https://datasheets.raspberrypi.com/rpizero/raspberry-pi-zero-w-reduced-schematics.pdf
+//- https://datasheets.raspberrypi.com/rpi3/raspberry-pi-3-b-plus-reduced-schematics.pdf
 //- https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
 //- https://pinout.xyz/ (in [] brackets if different)
 //- and the output of gpioinfo (in brackets () if different)
-RaspberryPi_ZeroW.board = {
+RaspberryPi_3BPlus.board = {
     3: { chip: 0, line: 2 }, //GPIO2 and SDA (SDA1) [I2C1 SDA]
     5: { chip: 0, line: 3 }, //GPIO3 and SCL (SCL1) [I2C1 SCL]
     7: { chip: 0, line: 4 }, //GPIO4 and GPCLK0 (GPIO_GCLK) [GPCLK0]
@@ -40,7 +40,7 @@ RaspberryPi_ZeroW.board = {
     38: { chip: 0, line: 20 }, //GPIO20 and PCM_DIN [PCM DIN]
     40: { chip: 0, line: 21 } //GPIO21 and PCM_DOUT [PCM DOUT]
 };
-RaspberryPi_ZeroW.bcm = {
+RaspberryPi_3BPlus.bcm = {
     GPIO0: _a.board[27], //GPIO0 and ID_SD (ID_SDA) [EEPROM SDA]
     ID_SD: _a.board[27],
     ID_SDA: _a.board[27],
@@ -109,4 +109,4 @@ RaspberryPi_ZeroW.bcm = {
     GPIO26: _a.board[37],
     GPIO27: _a.board[13]
 };
-exports.default = RaspberryPi_ZeroW;
+exports.default = RaspberryPi_3BPlus;
