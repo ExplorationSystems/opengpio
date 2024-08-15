@@ -10,7 +10,7 @@ export default class OrangePi_5 extends Device {
         12: { chip: 1, line: 29 }, //GPIO18 GPIO1_D5
         13: { chip: 1, line: 22 }, //GPIO27 GPIO1_C6
         15: { chip: 1, line: 20 }, //GPIO22 GPIO1_C4
-        16: { chip: 1, line: 18 }, //GPIO23 GPIO0_C2
+        16: { chip: 0, line: 18 }, //GPIO23 GPIO0_C2
         18: { chip: 1, line: 15 }, //GPIO24 GPIO1_B7
         19: { chip: 1, line: 7 }, //GPIO10 GPIO1_A7
         21: { chip: 1, line: 6 }, //GPIO9 GPIO1_A6

@@ -1,6 +1,6 @@
-import { NanoPi_NEO3, Edge } from '../src/';
+import { OrangePi_5, Edge } from '../src/';
 
-const watch = NanoPi_NEO3.watch(NanoPi_NEO3.bcm.GPIO0_D3, Edge.Rising);
+const watch = OrangePi_5.watch(OrangePi_5.bcm.GPIO19, Edge.Rising);
 watch.on('change', (value) => {
     console.log(`Edge detected: ${value}`);
 });
