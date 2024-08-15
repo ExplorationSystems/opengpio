@@ -5,7 +5,7 @@
         "node-addon-api": "^7.0.0"
     },
     "name": "opengpio",
-    "version": "1.0.14",
+    "version": "1.0.15",
     "main": "dist/index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
@@ -15,7 +15,8 @@
         "build:ts:watch": "npm run build:ts -- --watch",
         "start": "ts-node src/main.ts",
         "lint": "eslint . --ext .ts",
-        "format": "prettier --config .prettierrc 'src/**/*.ts' --write"
+        "format": "prettier --config .prettierrc 'src/**/*.ts' --write",
+        "bcmToChip": "node utils/bcmToChip.js"
     },
     "repository": {
         "type": "git",
@@ -25,6 +26,7 @@
         "gpio",
         "neo3",
         "raspberry",
+        "orange",
         "pi",
         "rpi",
         "2",
@@ -40,6 +42,7 @@
         "zero",
         "w",
         "2w",
+        "cm5",
         "nanopi",
         "pwm",
         "events",

@@ -27,6 +27,8 @@ This is inferred using the following algorithm:
 -   chip = 2 (GPIO[2]): Get the chip number from the number after GPIO.
 -   line = 8 x 2 (A=0, B=1, C=2, D=3)[C] + 2 (C[2]): Get the line by multiplying the 8 by the letter's corrisponding number and then adding the number after the letter.
 
+You can also use the script at `npm run bcmToChip`, providing the BCM number as arg 1. Eg: `npm run bcmToChip GPIO1_D3`
+
 ### Example Functional Implementation
 
 Below is example typescript code that would implement the algorithm above.
