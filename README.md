@@ -30,6 +30,8 @@ While this library can be used on most devices, you'll need to know the chip and
 -   RaspberryPi 5B
 -   RaspberryPi Zero2W
 -   RaspberryPi ZeroW
+-   OrangePi 5
+-   OrangePi CM5
 -   NanoPI NEO3
 
 ## Using An Official Driver
