@@ -23,7 +23,7 @@ While this library can be used on most devices, you'll need to know the chip and
     # Make libgpiod
     ./autogen.sh --enable-bindings-cxx
     make
-    make install
+    sudo make install
     ```
 
     **Debugging**
