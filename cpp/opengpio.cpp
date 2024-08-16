@@ -3,6 +3,9 @@
 #include <gpiod.hpp>
 #include <unistd.h>
 #include <uv.h>
+#include <time.h>
+#include <errno.h>
+
 using namespace std;
 
 Napi::Array GpioInput(Napi::CallbackInfo const &info)
@@ -168,18 +171,18 @@ struct PwmContext
     gpiod::line line;
 };
 
-void WaitBlocking(long nanoseconds)
+void WaitNanoseconds(long nanoseconds)
 {
-    // In a while loop continue to loop until the time has passed
-    auto start = chrono::high_resolution_clock::now();
-    while (true)
-    {
-        auto now = chrono::high_resolution_clock::now();
-        long diff = chrono::duration_cast<std::chrono::nanoseconds>(now - start).count();
-        if (diff >= nanoseconds)
-        {
-            break;
-        }
+    struct timespec req, rem;
+
+    // Calculate seconds and remaining nanoseconds
+    req.tv_sec = nanoseconds / 1000000000L;  // Convert nanoseconds to seconds
+    req.tv_nsec = nanoseconds % 1000000000L; // Remaining nanoseconds
+
+    while (nanosleep(&req, &rem) == -1 && errno == EINTR) {
+        // If nanosleep is interrupted by a signal (errno set to EINTR),
+        // continue sleeping for the remaining time
+        req = rem;
     }
 }
 
@@ -223,33 +226,6 @@ Napi::Array GpioPwm(Napi::CallbackInfo const &info)
             PwmContext *data = static_cast<PwmContext *>(req->data); // Get the data
             gpiod::line line = data->line;
 
-            // int samples = 100;
-            // int totalOffset = 0;
-            // for (int i = 0; i < samples; i++)
-            // {
-            //     auto time1 = chrono::high_resolution_clock::now();
-            //     line.set_value(true);
-            //     auto now1 = chrono::high_resolution_clock::now();
-            //     int diff1 = chrono::duration_cast<std::chrono::microseconds>(now1 - time1).count();
-            //     usleep(100);
-            //     auto time2 = chrono::high_resolution_clock::now();
-            //     line.set_value(false);
-            //     auto now2 = chrono::high_resolution_clock::now();
-            //     int diff2 = chrono::duration_cast<std::chrono::microseconds>(now2 - time2).count();
-
-            //     printf("Diff: %d : %d\n", diff1, diff2);
-            // }
-
-            // int offset = totalOffset / samples;
-            // printf("Offset: %d\n", offset);
-
-            // auto time = chrono::high_resolution_clock::now();
-            // line.set_value(true);
-            // auto now = chrono::high_resolution_clock::now();
-            // int offset = chrono::duration_cast<std::chrono::microseconds>(now - time).count();
-            // long tick_duration = std::chrono::steady_clock::duration(1);
-            // printf("Tick Duration: %ld\n", tick_duration);
-
             while (data->active)
             {
                 int frequency = data->frequency;
@@ -260,65 +236,11 @@ Napi::Array GpioPwm(Napi::CallbackInfo const &info)
                 long onTimeNs = onTime * 1e9;
                 long offTimeNs = offTime * 1e9;
 
-                // auto onStart = chrono::high_resolution_clock::now();
                 line.set_value(true);
-                // auto onNow = chrono::high_resolution_clock::now();
-                // long onOffset = chrono::duration_cast<std::chrono::microseconds>(onNow - onStart).count();
-                WaitBlocking(onTimeNs);
+                WaitNanoseconds(onTimeNs);
 
-                // auto now = chrono::high_resolution_clock::now();
-                // int offset = chrono::duration_cast<std::chrono::microseconds>(now - time).count();
-
-                // struct timespec onDelay;
-                // onDelay.tv_sec = 0;
-                // onDelay.tv_nsec = onTimeNs - offset;
-                // nanosleep(&onDelay, NULL);
-
-                // auto offStart = chrono::high_resolution_clock::now();
                 line.set_value(false);
-                // auto offNow = chrono::high_resolution_clock::now();
-                // long offOffset = chrono::duration_cast<std::chrono::microseconds>(offNow - offStart).count();
-                WaitBlocking(offTimeNs);
-                // struct timespec offDelay;
-                // offDelay.tv_sec = 0;
-                // offDelay.tv_nsec = offTimeNs;
-                // usleep(offTimeNs);
-                // nanosleep(&offDelay, NULL);
-
-                // time = chrono::high_resolution_clock::now();
-                // line.set_value(true);
-                // Wait(onTimeNs);
-
-                // if (onTimeNs > 0)
-                // {
-                //     line.set_value(true);
-                //     long offset = chrono::duration_cast<std::chrono::nanoseconds>(now - time).count();
-
-                //     struct timespec onDelay;
-                //     onDelay.tv_sec = 0;
-                //     onDelay.tv_nsec = onTimeNs - offset;
-
-                //     // printf("On Offset: %ld\n", offset);
-
-                //     nanosleep(&onDelay, NULL);
-                //     time = chrono::high_resolution_clock::now();
-                // }
-
-                // if (offTimeNs > 0)
-                // {
-                //     line.set_value(false);
-                //     auto now = chrono::high_resolution_clock::now();
-                //     long offset = chrono::duration_cast<std::chrono::nanoseconds>(now - time).count();
-                //     // printf("Off Offset: %ld\n", offset);
-
-                //     struct timespec offDelay;
-                //     offDelay.tv_sec = 0;
-                //     offDelay.tv_nsec = offTimeNs - offset;
-
-                //     nanosleep(&offDelay, NULL);
-                //     time = chrono::high_resolution_clock::now();
-                // }
-                // time = chrono::high_resolution_clock::now();
+                WaitNanoseconds(offTimeNs);
             }
         },
         [](uv_work_t *req, int status)
