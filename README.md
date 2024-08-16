@@ -13,7 +13,7 @@ While this library can be used on most devices, you'll need to know the chip and
 
     ``` sh
     # Ensure build dependancies
-    sudo apt install tar gzip build-essential autoconf curl
+    sudo apt install tar gzip build-essential autoconf curl autoconf-archive
     
     # Fetch libgpiod
     curl -o libgpiod-2.1.tar.gz 'https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/snapshot/libgpiod-2.1.tar.gz'
@@ -23,7 +23,7 @@ While this library can be used on most devices, you'll need to know the chip and
     # Make libgpiod
     ./autogen.sh --enable-bindings-cxx
     make
-    make install
+    sudo make install
     ```
 
     **Debugging**
