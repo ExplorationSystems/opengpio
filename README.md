@@ -72,9 +72,9 @@ pwm.setDutyCycle(0.2); // Updates the duty cycle of the pwm to 20% (4ms)
 If no official driver exists, you can use the Default device and provide the chip and line numbers directly. Otherwise, usage is identical.
 
 ```ts
-import { Default, Edge } from 'opengpio';
+import { DefaultDevice, Edge } from 'opengpio';
 
 // GPIO Output
-const output = Default.output({ chip: 0, line: 27 });
+const output = DefaultDevice.output({ chip: 0, line: 27 });
 output.value = true; // Set the pin high at chip 0 line 27
 ```

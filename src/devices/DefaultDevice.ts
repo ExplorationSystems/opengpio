@@ -1,6 +1,6 @@
 import { Device } from '../classes';
 
-export default class Default extends Device {
+export class DefaultDevice extends Device {
     static board = {
         0: { chip: 0, line: 0 }
     };

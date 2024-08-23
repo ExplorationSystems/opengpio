@@ -1,7 +1,7 @@
 import { Device } from '../classes/Device';
 
 // Schematics: https://drive.google.com/drive/folders/1eG4tuJnv7Jd4BzQTmjXZhBjIs2sG2z4L
-export default class OrangePi_5 extends Device {
+export class OrangePi_5 extends Device {
     static board = {
         3: { chip: 1, line: 27 }, //GPIO2 GPIO1_D3
         5: { chip: 1, line: 26 }, //GPIO3 GPIO1_D2

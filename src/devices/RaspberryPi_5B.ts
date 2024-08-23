@@ -1,6 +1,6 @@
 import { Device } from '../classes/Device';
 
-export default class RaspberryPi_5B extends Device {
+export class RaspberryPi_5B extends Device {
     //as of
     //- https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
     //- https://pinout.xyz/ (in [] brackets if different)

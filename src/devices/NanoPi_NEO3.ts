@@ -1,6 +1,6 @@
 import { Device } from '../classes/Device';
 
-export default class NanoPi_NEO3 extends Device {
+export class NanoPi_NEO3 extends Device {
     static board = {
         27: { chip: 0, line: 27 },
         66: { chip: 2, line: 2 },

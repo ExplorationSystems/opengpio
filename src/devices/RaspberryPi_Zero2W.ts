@@ -1,6 +1,6 @@
 import { Device } from '../classes/Device';
 
-export default class RaspberryPi_Zero2W extends Device {
+export class RaspberryPi_Zero2W extends Device {
     //as of 
     //- https://datasheets.raspberrypi.com/rpizero2/raspberry-pi-zero-2-w-reduced-schematics.pdf
     //- https://www.raspberrypi.com/documentation/computers/raspberry-pi.html

@@ -1,6 +1,6 @@
 import { Device } from '../classes/Device';
 
-export default class RaspberryPi_3BPlus extends Device {
+export class RaspberryPi_3BPlus extends Device {
     //as of 
     //- https://datasheets.raspberrypi.com/rpi3/raspberry-pi-3-b-plus-reduced-schematics.pdf
     //- https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
