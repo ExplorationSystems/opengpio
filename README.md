@@ -33,6 +33,7 @@ While this library can be used on most devices, you'll need to know the chip and
 -   OrangePi 5
 -   OrangePi CM5
 -   NanoPI NEO3
+-   Radax Rock S0
 
 ## Using An Official Driver
 
