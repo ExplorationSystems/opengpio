@@ -14,13 +14,11 @@ export class Watch extends EventEmitter {
         super();
         const [getter, cleanup] = lib.watch(gpio.chip, gpio.line, (value) => {
             if (value && (edge === Edge.Rising || edge === Edge.Both)) {
-                console.log('Rising Event', value);
                 // Has risen to true
                 this.emit('event', value);
                 this.emit('change', value);
                 this.emit('rise', value);
             } else if (!value && (edge === Edge.Falling || edge === Edge.Both)) {
-                console.log('Falling Event', value);
                 // Has fallen to false
                 this.emit('event', value);
                 this.emit('change', value);
