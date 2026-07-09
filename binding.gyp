@@ -7,8 +7,10 @@
             "<!@(node -p \"require('node-addon-api').include\")"
         ],  
         "libraries": [
-            "-lgpiodcxx"
+            "-lgpiodcxx",
+            "-pthread"
         ],
+        "cflags_cc": ["-pthread"],
         "cflags_cc!": ["-fno-exceptions"],
         "defines": [ "NAPI_DISABLE_CPP_EXCEPTIONS" ],
     }
