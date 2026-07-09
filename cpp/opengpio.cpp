@@ -3,6 +3,8 @@
 #include <gpiod.hpp>
 #include <unistd.h>
 #include <uv.h>
+#include <thread>
+#include <atomic>
 using namespace std;
 
 Napi::Array GpioInput(Napi::CallbackInfo const &info)
@@ -119,7 +121,7 @@ Napi::String Info(const Napi::CallbackInfo &info)
 
 struct WatchContext
 {
-    bool active;
+    std::atomic<bool> active;
     ::gpiod::line_request *request;
     Napi::ThreadSafeFunction thread_safe_watch_callback;
 };
@@ -183,9 +185,6 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
     data->active = true;
     data->thread_safe_watch_callback = thread_safe_watch_callback;
 
-    uv_work_t *req = new uv_work_t;
-    req->data = data;
-
     Napi::Function getter = Napi::Function::New(info.Env(), [request, line_offset](const Napi::CallbackInfo &info)
                                                 {
     bool value = request->get_value(line_offset) == ::gpiod::line::value::ACTIVE ? true : false;
@@ -194,42 +193,41 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
     Napi::Function cleanup = Napi::Function::New(info.Env(), [data](const Napi::CallbackInfo &info)
                                                  { data->active = false; });
 
-    uv_queue_work(
-        uv_default_loop(), req,
-        [](uv_work_t *req)
+    // Run the blocking edge-event loop on a dedicated std::thread instead of the
+    // libuv thread pool (uv_queue_work). The pool is bounded (UV_THREADPOOL_SIZE,
+    // default 4) and this loop never returns until the watch is stopped, so one
+    // watch per pool slot would starve the pool and silently prevent additional
+    // GPIO inputs from ever receiving edge events. A dedicated thread has no such
+    // limit; the ThreadSafeFunction makes the callback safe from any thread.
+    std::thread watch_thread([data]()
+                             {
+        ::gpiod::edge_event_buffer buffer(1);
+        ::gpiod::line_request *request = data->request;
+
+        while (data->active)
         {
-            WatchContext *data = static_cast<WatchContext *>(req->data);
-            ::gpiod::edge_event_buffer buffer(1);
-            ::gpiod::line_request *request = data->request;
-
-            while (data->active)
+            bool has_event = request->wait_edge_events(chrono::milliseconds(1));
+            if (has_event)
             {
-                bool has_event = request->wait_edge_events(chrono::milliseconds(1));
-                if (has_event)
-                {
-                    request->read_edge_events(buffer);
+                request->read_edge_events(buffer);
 
-                    // ::gpiod::edge_event &event = buffer[0];
-                    for (const auto &event : buffer)
-                    {
-                        bool value = event.type() == ::gpiod::edge_event::event_type::RISING_EDGE ? true : false;
-                        data->thread_safe_watch_callback.BlockingCall(new bool(value), [](Napi::Env env, Napi::Function watch_callback, bool *value)
-                                                                      {
-                                                                    watch_callback.Call({Napi::Boolean::New(env, *value)});
-                                                                    delete value; });
-                    }
+                for (const auto &event : buffer)
+                {
+                    bool value = event.type() == ::gpiod::edge_event::event_type::RISING_EDGE ? true : false;
+                    data->thread_safe_watch_callback.BlockingCall(new bool(value), [](Napi::Env env, Napi::Function watch_callback, bool *value)
+                                                                  {
+                                                                watch_callback.Call({Napi::Boolean::New(env, *value)});
+                                                                delete value; });
                 }
             }
-        },
-        [](uv_work_t *req, int status)
-        {
-            WatchContext *data = static_cast<WatchContext *>(req->data);
-            data->thread_safe_watch_callback.Release();
-            data->request->release();
+        }
 
-            delete req;
-            delete data;
-        });
+        // The loop has been stopped via cleanup(); release resources here (the
+        // equivalent of the old uv_queue_work completion callback).
+        data->thread_safe_watch_callback.Release();
+        data->request->release();
+        delete data; });
+    watch_thread.detach();
 
     // Outputs
     Napi::Array arr = Napi::Array::New(info.Env(), 2);
@@ -244,7 +242,7 @@ struct PwmContext
     int frequency;
     double duty_cycle;
     int line_offset;
-    bool active;
+    std::atomic<bool> active;
     ::gpiod::line_request *request;
 };
 
@@ -306,42 +304,36 @@ Napi::Array GpioPwm(Napi::CallbackInfo const &info)
     data->active = true;
     data->line_offset = line_offset;
 
-    uv_work_t *req = new uv_work_t;
-    req->data = data;
+    // Run the PWM loop on a dedicated std::thread instead of the libuv thread
+    // pool (uv_queue_work); see the explanation in GpioWatch. The loop is a busy
+    // wait that never returns until stopped, so it must not occupy a bounded
+    // pool slot.
+    std::thread pwm_thread([data]()
+                           {
+        ::gpiod::line_request *request = data->request;
+        int line_offset = data->line_offset;
 
-    uv_queue_work(
-        uv_default_loop(), req,
-        [](uv_work_t *req)
+        while (data->active)
         {
-            PwmContext *data = static_cast<PwmContext *>(req->data); // Get the data
-            ::gpiod::line_request *request = data->request;
-            int line_offset = data->line_offset;
+            int frequency = data->frequency;
+            double duty_cycle = data->duty_cycle;
+            double period = 1.0 / frequency;
+            double on_time = period * duty_cycle;
+            double off_time = period - on_time;
+            long on_time_ns = on_time * 1e9;
+            long off_time_ns = off_time * 1e9;
 
-            while (data->active)
-            {
-                int frequency = data->frequency;
-                double duty_cycle = data->duty_cycle;
-                double period = 1.0 / frequency;
-                double on_time = period * duty_cycle;
-                double off_time = period - on_time;
-                long on_time_ns = on_time * 1e9;
-                long off_time_ns = off_time * 1e9;
+            request->set_value(line_offset, ::gpiod::line::value::ACTIVE);
+            WaitBlocking(on_time_ns);
 
-                request->set_value(line_offset, ::gpiod::line::value::ACTIVE);
-                WaitBlocking(on_time_ns);
+            request->set_value(line_offset, ::gpiod::line::value::INACTIVE);
+            WaitBlocking(off_time_ns);
+        }
 
-                request->set_value(line_offset, ::gpiod::line::value::INACTIVE);
-                WaitBlocking(off_time_ns);
-            }
-        },
-        [](uv_work_t *req, int status)
-        {
-            PwmContext *data = static_cast<PwmContext *>(req->data);
-            data->request->release();
-
-            delete req;
-            delete data;
-        });
+        // Stopped via cleanup(); release resources here.
+        data->request->release();
+        delete data; });
+    pwm_thread.detach();
 
     Napi::Function duty_cycle_setter = Napi::Function::New(info.Env(), [data](const Napi::CallbackInfo &info)
                                                            {
